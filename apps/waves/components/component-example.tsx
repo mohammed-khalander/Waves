@@ -67,6 +67,11 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { PlusIcon, BluetoothIcon, MoreVerticalIcon, FileIcon, FolderIcon, FolderOpenIcon, FileCodeIcon, MoreHorizontalIcon, FolderSearchIcon, SaveIcon, DownloadIcon, EyeIcon, LayoutIcon, PaletteIcon, SunIcon, MoonIcon, MonitorIcon, UserIcon, CreditCardIcon, SettingsIcon, KeyboardIcon, LanguagesIcon, BellIcon, MailIcon, ShieldIcon, HelpCircleIcon, FileTextIcon, LogOutIcon } from "lucide-react"
 
+
+
+import { useTRPC } from "@/trpc/client";
+import { useSuspenseQuery } from "@tanstack/react-query"
+
 export function ComponentExample() {
   return (
     <ExampleWrapper>
@@ -77,6 +82,13 @@ export function ComponentExample() {
 }
 
 function CardExample() {
+
+  const trpc = useTRPC();
+
+
+  const { data } = useSuspenseQuery(trpc.getName.queryOptions({name:"Khalander"}));
+  
+
   return (
     <Example title="Card" className="items-center justify-center">
       <Card className="relative w-full max-w-sm overflow-hidden pt-0">
@@ -90,9 +102,7 @@ function CardExample() {
         <CardHeader>
           <CardTitle>Observability Plus is replacing Monitoring</CardTitle>
           <CardDescription>
-            Switch to the improved way to explore your data, with natural
-            language. Monitoring will no longer be available on the Pro plan in
-            November, 2025
+            {data.yourName}
           </CardDescription>
         </CardHeader>
         <CardFooter>
