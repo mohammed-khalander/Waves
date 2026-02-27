@@ -4,6 +4,7 @@ import "./globals.css";
 
 
 import { TRPCReactProvider } from "@/trpc/client";
+import { Toaster } from "@/components/ui/sonner";
 
 
 const outfit = Outfit({subsets:['latin'],variable:'--font-sans'});
@@ -39,6 +40,7 @@ export default function RootLayout({
         <TRPCReactProvider>
           {children}
         </TRPCReactProvider>
+        <Toaster/>
       </body>
     </html>
   );

@@ -70,7 +70,8 @@ import { PlusIcon, BluetoothIcon, MoreVerticalIcon, FileIcon, FolderIcon, Folder
 
 
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { toast } from "sonner";
 
 export function ComponentExample() {
   return (
@@ -87,6 +88,17 @@ function CardExample() {
 
 
   const { data } = useSuspenseQuery(trpc.getName.queryOptions({name:"Khalander"}));
+
+  const result = useMutation(trpc.invokeInngest.mutationOptions({
+    onSuccess:async (data)=>{
+      toast.success(data.message, { position:"top-center" } );
+    },
+    onError: (error)=>{
+      // console.log(error.data?.stack);
+      toast.error(error.data?.code, { position:"top-center" } );
+      // toast.error(error.message, { position:"top-center" } )
+    }
+  }))
   
 
   return (
@@ -127,7 +139,7 @@ function CardExample() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Don&apos;t allow</AlertDialogCancel>
-                <AlertDialogAction>Allow</AlertDialogAction>
+                <AlertDialogAction onClick={()=>{ result.mutate({video:"Code With Antonio"}) }} className="cursor-pointer" > Invoke Inngest </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

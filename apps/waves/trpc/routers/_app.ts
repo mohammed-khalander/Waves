@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { baseProcedure, createTRPCRouter } from '../init';
 import { TRPCError } from '@trpc/server';
+import { inngest } from '@/inngest/client';
 export const appRouter = createTRPCRouter({
   hello: baseProcedure
     .input(
@@ -12,7 +13,7 @@ export const appRouter = createTRPCRouter({
       return {
         greeting: `hello ${opts.input.text}`,
       };
-    }), // Testing Route
+    }), // Testing tRPC Route
   getName:baseProcedure.input(z.object({name:z.string()})).query(({input})=>{  
     if(input.name==""){
       throw new TRPCError({code:"UNAUTHORIZED",message:"Name Can't be Empty"});
@@ -20,6 +21,15 @@ export const appRouter = createTRPCRouter({
     return{
         yourName:`tRPC setUp is proper Mr/Ms ${input.name}, Now you can start calling RPC  `
     }
+  }), // Testing Inngest
+  invokeInngest:baseProcedure.input(z.object({ video: z.string() })).mutation(async({input})=>{
+    await inngest.send({
+      name:"test/hello.world",
+      data:{
+        video:input.video
+      }
+    })
+    return { message:"Inngest BG Job Triggered" }
   })
 });
 // export type definition of API
