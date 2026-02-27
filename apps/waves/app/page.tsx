@@ -4,6 +4,7 @@ import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { ErrorBoundary } from "react-error-boundary";
 import { getQueryClient, trpc } from '@/trpc/server';
 import { Suspense } from "react";
+import { TRPCErrorFallback } from "./Error-Boundary-Trpc";
 
 export default async function Page() {
 
@@ -13,7 +14,8 @@ export default async function Page() {
 
     return(
         <HydrationBoundary state={dehydrate(queryClient)}>
-            <ErrorBoundary fallback={<h1> Something Went Wong </h1>}>
+            {/* <ErrorBoundary fallback={<h1> Something Went Wong </h1>}> */}
+            <ErrorBoundary FallbackComponent={TRPCErrorFallback}>
                 <Suspense fallback={<h1> Loading the Data..... </h1>}>
                     <ComponentExample />
                 </Suspense>
