@@ -13,7 +13,9 @@ export const appRouter = createTRPCRouter({
       return {
         greeting: `hello ${opts.input.text}`,
       };
-    }), // Testing tRPC Route
+    }),
+    
+  // Testing tRPC Route
   getName:baseProcedure.input(z.object({name:z.string()})).query(({input})=>{  
     if(input.name==""){
       throw new TRPCError({code:"UNAUTHORIZED",message:"Name Can't be Empty"});
@@ -21,7 +23,9 @@ export const appRouter = createTRPCRouter({
     return{
         yourName:`tRPC setUp is proper Mr/Ms ${input.name}, Now you can start calling RPC  `
     }
-  }), // Testing Inngest
+  }), 
+  
+  // Testing Inngest
   invokeInngest:baseProcedure.input(z.object({ video: z.string() })).mutation(async({input})=>{
     await inngest.send({
       name:"test/hello.world",
@@ -30,7 +34,22 @@ export const appRouter = createTRPCRouter({
       }
     })
     return { message:"Inngest BG Job Triggered" }
+  }), 
+  
+  // Testing Inngest Agent Kit
+  generate:baseProcedure.input(z.object({name:z.string()})).mutation(async({input})=>{
+
+     await inngest.send({
+      name:"waves/ai-generate",
+      data:{
+        name:input.name,
+      }
+     })
+
+     return {message:"Inngest BG JOb Triggered, In a while the Component will be created"}
+
   })
+
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;
