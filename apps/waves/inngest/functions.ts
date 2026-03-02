@@ -115,15 +115,13 @@ export const aiJob = inngest.createFunction(
 
 import { groq } from '@ai-sdk/groq';
 import { generateText,Output } from 'ai';
-import {z} from "zod";
-
+import { z } from "zod"
 
 
 const SYSTEM_PROMPT = `
         You are a senior Next.js 16 developer.
         You write clean, readable, production-ready code.
-        Always use TypeScript.
-        Keep components simple.
+        Always use TypeScript, Shadcn components and tailwind css (className) for UI and styling
 
         IMPORTANT:
             Always return strictly valid JSON.
@@ -134,13 +132,30 @@ const SYSTEM_PROMPT = `
         {
           "files": [
             {
-              "fileName": "Hero.tsx",
+              "fileName": "fileName.tsx",
               "code": "string"
             }
           ]
         }
+
+        Don't think much and reason stuffs, just return output in one single go without reasoning and thinking
 `;
 
+
+  import { openai, createAgent } from "@inngest/agent-kit";
+   
+   const model = openai({
+    //  model: "llama3-70b-8192",
+     model: "openai/gpt-oss-20b",
+     apiKey: process.env.GROQ_API_KEY,
+     baseUrl: "https://api.groq.com/openai/v1/",
+   });
+
+  const codingAgent = createAgent({
+    model,
+    name: 'NextJs Developer',
+    system:SYSTEM_PROMPT
+  });
 
 
 export const aiJob = inngest.createFunction(
@@ -149,19 +164,22 @@ export const aiJob = inngest.createFunction(
     async ({event,step})=>{
         const name = event.data.name;
 
-        const result = await generateText({
-            model: groq('openai/gpt-oss-20b'),
-            messages:[{role:"system",content:SYSTEM_PROMPT},{role:"user",content:`Generate a Simple NextJs component for  ${name} `}],
-            output:Output.object({
-                schema:z.object({
-                files:z.array(z.object({
-                    fileName:z.string().describe("This Should contain the Name of the file Creating (Only the file name)"),
-                    code:z.string().describe("This should contian only the code(Pure Code)"),
-                }))
-                })
-            })
-        });
+        // const result = await generateText({
+        //     model: groq('openai/gpt-oss-20b'),
+        //     messages:[{role:"system",content:SYSTEM_PROMPT},{role:"user",content:`Generate a Simple NextJs component for  ${name} `}],
+        //     output:Output.object({
+        //         schema:z.object({
+        //         files:z.array(z.object({
+        //             fileName:z.string().describe("This Should contain the Name of the file Creating (Only the file name)"),
+        //             code:z.string().describe("This should contian only the code(Pure Code)"),
+        //         }))
+        //         })
+        //     })
+        // });
 
-        return { response: result.output.files }
+        const result  = await codingAgent.run(` Generate a Simple NextJs component for  ${name}`);
+
+
+        return { response: result }
     }
 )
