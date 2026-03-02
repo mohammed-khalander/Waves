@@ -113,43 +113,36 @@ export const aiJob = inngest.createFunction(
 
 
 
-import { groq } from '@ai-sdk/groq';
-import { generateText,Output } from 'ai';
-import { z } from "zod"
+// import { groq } from '@ai-sdk/groq';
+// import { generateText,Output } from 'ai';
+// import { z } from "zod"
+// const result = await generateText({
+//     model: groq('openai/gpt-oss-20b'),
+//     messages:[{role:"system",content:SYSTEM_PROMPT},{role:"user",content:`Generate a Simple NextJs component for  ${name} `}],
+//     output:Output.object({
+//         schema:z.object({
+//         files:z.array(z.object({
+//             fileName:z.string().describe("This Should contain the Name of the file Creating (Only the file name)"),
+//             code:z.string().describe("This should contian only the code(Pure Code)"),
+//         }))
+//         })
+//     })
+// });
 
 
-const SYSTEM_PROMPT = `
-        You are a senior Next.js 16 developer.
-        You write clean, readable, production-ready code.
-        Always use TypeScript, Shadcn components and tailwind css (className) for UI and styling
+import { SYSTEM_PROMPT } from "@/types/prompts";
 
-        IMPORTANT:
-            Always return strictly valid JSON.
-            Do not return markdown.
-            Do not include explanations.
+import { openai, createAgent } from "@inngest/agent-kit";
+import { Sandbox } from '@e2b/code-interpreter';
+import { getSandbox } from "./utils";
 
-        Return ONLY valid JSON in this format:
-        {
-          "files": [
-            {
-              "fileName": "fileName.tsx",
-              "code": "string"
-            }
-          ]
-        }
-
-        Don't think much and reason stuffs, just return output in one single go without reasoning and thinking
-`;
-
-
-  import { openai, createAgent } from "@inngest/agent-kit";
    
-   const model = openai({
-    //  model: "llama3-70b-8192",
-     model: "openai/gpt-oss-20b",
-     apiKey: process.env.GROQ_API_KEY,
-     baseUrl: "https://api.groq.com/openai/v1/",
-   });
+  const model = openai({
+   //  model: "llama3-70b-8192",
+    model: "openai/gpt-oss-20b",
+    apiKey: process.env.GROQ_API_KEY,
+    baseUrl: "https://api.groq.com/openai/v1/",
+  });
 
   const codingAgent = createAgent({
     model,
@@ -162,24 +155,22 @@ export const aiJob = inngest.createFunction(
     {id:"ai-job"},
     {event:"waves/ai-generate"},
     async ({event,step})=>{
-        const name = event.data.name;
+      const name = event.data.name;
 
-        // const result = await generateText({
-        //     model: groq('openai/gpt-oss-20b'),
-        //     messages:[{role:"system",content:SYSTEM_PROMPT},{role:"user",content:`Generate a Simple NextJs component for  ${name} `}],
-        //     output:Output.object({
-        //         schema:z.object({
-        //         files:z.array(z.object({
-        //             fileName:z.string().describe("This Should contain the Name of the file Creating (Only the file name)"),
-        //             code:z.string().describe("This should contian only the code(Pure Code)"),
-        //         }))
-        //         })
-        //     })
-        // });
+      const sandboxId = await step.run("create-sandbox",async()=>{
+        const sandbox = await Sandbox.create("khalandermohammed734/waves-nextjs");
+        return sandbox.sandboxId;
+      })
 
-        const result  = await codingAgent.run(` Generate a Simple NextJs component for  ${name}`);
+      const result  = await codingAgent.run(` Generate a Simple NextJs component for  ${name}`);
 
+      const sandboxUrl = await step.run("get-sandbox-url",async()=>{
+        const sandbox = await getSandbox(sandboxId);
+        const host = sandbox.getHost(3000);
+        const url = `https://${host}`;
+        return  url;
+      })
 
-        return { response: result }
+      return { code: result.output, sandboxId:sandboxId, sandboxUrl:sandboxUrl }
     }
 )

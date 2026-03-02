@@ -10,11 +10,15 @@
     "db:push": "bunx --bun prisma migrate dev",
     "db:studio": "bunx --bun prisma studio",
     "seed": "bun run prisma/seed.ts",
-    "dev:inngest": "npx --ignore-scripts=false inngest-cli@latest dev"
+    "dev:inngest": "npx --ignore-scripts=false inngest-cli@latest dev",
+    "e2b": "npx e2b sandbox list",
+    "e2b:template": "npx e2b template build --name waves-nextjs --cmd \"/compile-page.sh\""
   },
   "dependencies": {
     "@ai-sdk/groq": "^3.0.25",
     "@base-ui/react": "^1.2.0",
+    "@e2b/cli": "^2.7.3",
+    "@e2b/code-interpreter": "^2.3.3",
     "@inngest/agent-kit": "^0.13.2",
     "@prisma/adapter-pg": "^7.4.1",
     "@prisma/client": "^7.4.1",
