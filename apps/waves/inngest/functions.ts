@@ -1,6 +1,198 @@
-import { inngest } from "./client";
+/** Refer
+ * 
+ *  https://agentkit.inngest.com/getting-started/quick-start 
+ *  https://e2b.dev/docs
+ * 
+*/
 
-/** https://agentkit.inngest.com/getting-started/quick-start */
+
+import { openai, createAgent, createTool, createNetwork } from "@inngest/agent-kit";
+import { Sandbox } from '@e2b/code-interpreter';
+import { z } from "zod";
+
+
+import { inngest } from "./client";
+import { getSandbox, lastAssistantTextMessageContent } from "./utils";
+import { SYSTEM_PROMPT } from "@/inngest/prompts";
+
+
+
+export const aiJob = inngest.createFunction(
+    {id:"ai-job"},
+    {event:"waves/ai-generate"},
+    async ({event,step})=>{
+      const name = event.data.name;
+
+      const sandboxId = await step.run("create-sandbox",async()=>{
+        const sandbox = await Sandbox.create("khalandermohammed734/waves-nextjs");
+        return sandbox.sandboxId;
+      })
+
+      const executeCommand = createTool({
+          name:"terminal-cmd",
+          description:"Use the terminal to run commands in sandbox",
+          parameters: z.object({
+              command:z.string().describe("accepts the command to execute/run"),
+          }),
+          handler: async ({command},{step})=>{
+              const result = await step?.run("terminal-cmd",async ()=>{
+                  const buffers = {
+                      stdout:"",
+                      stderr:"",
+                  }
+                  try{
+      
+                      const sandbox = await getSandbox(sandboxId);
+                      
+                      const result = await sandbox.commands.run(command,{     // CHATGPT:- Explain the syntax and working of this
+                          onStdout:(data:string)=>{
+                              buffers.stdout += data; 
+                          },
+                          onStderr:(data:string)=>{
+                              buffers.stderr += data;
+                          }
+                      });
+      
+                      return result.stdout;
+                      
+                  }catch(error){
+                      console.log(`Command ${command} failed to execute in 'terminal-cmd' tool,\n Error ${error} \n\n stdout: ${buffers.stdout} \n\n stderror: ${buffers.stderr}`);
+                      return `Command ${command} failed to execute in 'terminal-cmd' tool,\n Error ${error} \n\n stdout: ${buffers.stdout} \n\n stderror: ${buffers.stderr}`;
+                  }
+              })
+      
+              return result;
+          }
+      })
+      
+      
+      const createOrUpdateFiles = createTool({
+          name:"createOrUpdateFiles",
+          description:"Create Or Update file in teh sandbox",
+          parameters:z.object({
+              files:z.array(z.object({ path:z.string(), content:z.string() }))
+          }),
+          handler:async ({files},{step,network})=>{
+              const newFiles = await step?.run("createOrUpdateFiles",async ()=>{
+                  try{
+                      // CHATGPT:- Explain the syntax and working, clearly explain what it is doing
+                      // Are these things like .files and .summary and all pre-defined or we are defining,
+      
+                      const updatedFiles = network.state.data.files || { }; // CHATGPT:- What is this network.state.data.files
+                      // Here choosing object instead of array is smarter move, because if the same file, comes again in the below loop, it'll just override with the new content, instead of agian having the previous content
+                      const sandbox = await getSandbox(sandboxId);
+      
+                      for(const file of files){   // CHATGPT:- What is this doing ?, Like, why do we have updatedFiles and what are we pushing to it and all,
+                          await sandbox.files.write(file.path,file.content);
+                          updatedFiles[file.path] = file.content;
+                      }
+                      
+                      return updatedFiles;
+      
+                  }catch(error){
+                      return `Error in Creating/Updating the files ${error}`;
+                  }
+              })
+      
+              if(typeof newFiles === "object"){
+                  network.state.data.files = newFiles;    // CHATGPT:-  This tool can be called multiple times, let's say in any of the step, if agent called this tool to modify only one file, then won't we override this completely with one file, or is it like we'll have the content set from above
+              }
+              return newFiles;
+          }
+      })
+      
+      
+      const readFiles = createTool({
+          name:"ReadFiles",
+          description:"Read Files from the sandbox",
+          parameters:z.object({ files:z.array(z.string()) }), 
+          handler: async({files},{step,network})=>{
+              return await step?.run("Read Files",async ()=>{
+                  try{
+      
+                      const sandbox = await getSandbox(sandboxId);
+                      
+                      const contents = [];
+      
+                      for(const file of files){
+                          const content = await sandbox.files.read(file);
+                          contents.push({path:file,content});
+                      }
+      
+                      return JSON.stringify(contents);    // anyhow we won't be reading this result, this is just for AI Agent to read the content
+      
+                  }catch(error){
+                      return `Error Occured in Reading the Files from sandbox ${error}`;
+                  }
+              })
+          }
+      })
+
+
+
+         
+      const model = openai({
+       //  model: "llama3-70b-8192",
+        model: "moonshotai/kimi-k2-instruct-0905",
+        apiKey: process.env.GROQ_API_KEY,
+        baseUrl: "https://api.groq.com/openai/v1/",
+        defaultParameters:{
+          temperature:0.1,
+        },
+      });
+    
+      const codingAgent = createAgent({
+        model,
+        name: 'NextJs Developer',
+        description:"An Expert FullStack Developer with vast knowledge in UI/UX",
+        system:SYSTEM_PROMPT,
+        tools:[executeCommand,createOrUpdateFiles,readFiles],
+        tool_choice:"auto",
+        lifecycle:{  // CHATGPT:- Explain this syntax properly step by step, why do we use this lifecycle, when and all it'll run
+          onResponse: async ({result,network})=>{
+            const lastAssistantMessageText = lastAssistantTextMessageContent(result);
+            if(lastAssistantMessageText && network){
+              if(lastAssistantMessageText.includes("<task_summary>")){
+                network.state.data.summary = lastAssistantMessageText;
+              }
+            }
+            return result;
+          }
+        }
+      });
+    
+    
+      const network = createNetwork({
+        name:"NextJs Developer Network",
+        agents:[codingAgent],
+        maxIter:15,
+        router: async ({network})=>{
+          const summary = network.state.data.summary;
+          if(summary){
+            return;
+          }
+          return codingAgent;
+        }
+      })
+      // const result  = await codingAgent.run(` Generate a Simple NextJs component for  ${name}`);
+
+      const result = await network.run(name);
+
+      const sandboxUrl = await step.run("get-sandbox-url",async()=>{
+        const sandbox = await getSandbox(sandboxId);
+        const host = sandbox.getHost(3000);
+        const url = `https://${host}`;
+        return  url;
+      })
+
+      return { sandboxId:sandboxId, sandboxUrl:sandboxUrl, files:result.state.data.files, summary:result.state.data.summary }
+    }
+)
+
+
+
+
+
 
 export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
@@ -128,49 +320,3 @@ export const aiJob = inngest.createFunction(
 //         })
 //     })
 // });
-
-
-import { SYSTEM_PROMPT } from "@/types/prompts";
-
-import { openai, createAgent } from "@inngest/agent-kit";
-import { Sandbox } from '@e2b/code-interpreter';
-import { getSandbox } from "./utils";
-
-   
-  const model = openai({
-   //  model: "llama3-70b-8192",
-    model: "openai/gpt-oss-20b",
-    apiKey: process.env.GROQ_API_KEY,
-    baseUrl: "https://api.groq.com/openai/v1/",
-  });
-
-  const codingAgent = createAgent({
-    model,
-    name: 'NextJs Developer',
-    system:SYSTEM_PROMPT
-  });
-
-
-export const aiJob = inngest.createFunction(
-    {id:"ai-job"},
-    {event:"waves/ai-generate"},
-    async ({event,step})=>{
-      const name = event.data.name;
-
-      const sandboxId = await step.run("create-sandbox",async()=>{
-        const sandbox = await Sandbox.create("khalandermohammed734/waves-nextjs");
-        return sandbox.sandboxId;
-      })
-
-      const result  = await codingAgent.run(` Generate a Simple NextJs component for  ${name}`);
-
-      const sandboxUrl = await step.run("get-sandbox-url",async()=>{
-        const sandbox = await getSandbox(sandboxId);
-        const host = sandbox.getHost(3000);
-        const url = `https://${host}`;
-        return  url;
-      })
-
-      return { code: result.output, sandboxId:sandboxId, sandboxUrl:sandboxUrl }
-    }
-)
