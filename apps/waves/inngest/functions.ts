@@ -44,7 +44,7 @@ export const aiJob = inngest.createFunction(
       
                       const sandbox = await getSandbox(sandboxId);
                       
-                      const result = await sandbox.commands.run(command,{     // CHATGPT:- Explain the syntax and working of this
+                      const result = await sandbox.commands.run(command,{     
                           onStdout:(data:string)=>{
                               buffers.stdout += data; 
                           },
@@ -68,21 +68,18 @@ export const aiJob = inngest.createFunction(
       
       const createOrUpdateFiles = createTool({
           name:"createOrUpdateFiles",
-          description:"Create Or Update file in teh sandbox",
+          description:"Create Or Update file in the sandbox",
           parameters:z.object({
               files:z.array(z.object({ path:z.string(), content:z.string() }))
           }),
           handler:async ({files},{step,network})=>{
               const newFiles = await step?.run("createOrUpdateFiles",async ()=>{
                   try{
-                      // CHATGPT:- Explain the syntax and working, clearly explain what it is doing
-                      // Are these things like .files and .summary and all pre-defined or we are defining,
-      
-                      const updatedFiles = network.state.data.files || { }; // CHATGPT:- What is this network.state.data.files
+                      const updatedFiles = network.state.data.files || { }; 
                       // Here choosing object instead of array is smarter move, because if the same file, comes again in the below loop, it'll just override with the new content, instead of agian having the previous content
                       const sandbox = await getSandbox(sandboxId);
       
-                      for(const file of files){   // CHATGPT:- What is this doing ?, Like, why do we have updatedFiles and what are we pushing to it and all,
+                      for(const file of files){   
                           await sandbox.files.write(file.path,file.content);
                           updatedFiles[file.path] = file.content;
                       }
@@ -95,7 +92,7 @@ export const aiJob = inngest.createFunction(
               })
       
               if(typeof newFiles === "object"){
-                  network.state.data.files = newFiles;    // CHATGPT:-  This tool can be called multiple times, let's say in any of the step, if agent called this tool to modify only one file, then won't we override this completely with one file, or is it like we'll have the content set from above
+                  network.state.data.files = newFiles; 
               }
               return newFiles;
           }
@@ -148,7 +145,7 @@ export const aiJob = inngest.createFunction(
         system:SYSTEM_PROMPT,
         tools:[executeCommand,createOrUpdateFiles,readFiles],
         tool_choice:"auto",
-        lifecycle:{  // CHATGPT:- Explain this syntax properly step by step, why do we use this lifecycle, when and all it'll run
+        lifecycle:{  
           onResponse: async ({result,network})=>{
             const lastAssistantMessageText = lastAssistantTextMessageContent(result);
             if(lastAssistantMessageText && network){

@@ -11,7 +11,6 @@ export async function getSandbox(sandboxId:string){
 }
 
 
-// CHATGPT:- Explain what the hell is this doing, with syntax, and explain how does the o/p of each variable looks with i/p with example
 
 export function lastAssistantTextMessageContent(result:AgentResult){
     const lastAssistantTextMessageIndex = result.output.findLastIndex( (message) => message.role === "assistant" );
