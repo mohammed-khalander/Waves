@@ -21,7 +21,7 @@ export const aiJob = inngest.createFunction(
     {id:"ai-job"},
     {event:"waves/ai-generate"},
     async ({event,step})=>{
-      const name = event.data.name;
+      const userQuery = event.data.userQuery;
 
       const sandboxId = await step.run("create-sandbox",async()=>{
         const sandbox = await Sandbox.create("khalandermohammed734/waves-nextjs");
@@ -126,11 +126,28 @@ export const aiJob = inngest.createFunction(
       })
 
 
+      const finishTask = createTool({
+        name:"finish_task",
+        description:"Call this tool when code generation is completed",
+        parameters:z.object({
+            summary:z.string(),
+        }),
+        handler: async({summary},{network})=>{
+            network.state.data.summary = summary;
+            return "Task Complted";
+        }
+      })
+
+
 
          
       const model = openai({
-       //  model: "llama3-70b-8192",
+       // model: "llama-3.3-70b-versatile",
         model: "moonshotai/kimi-k2-instruct-0905",
+        // model: "qwen/qwen3-32b",
+        // model: "openai/gpt-oss-120b",
+        // model: "meta-llama/llama-4-scout-17b-16e-instruct",
+        // model: "groq/compound",
         apiKey: process.env.GROQ_API_KEY,
         baseUrl: "https://api.groq.com/openai/v1/",
         defaultParameters:{
@@ -173,7 +190,7 @@ export const aiJob = inngest.createFunction(
       })
       // const result  = await codingAgent.run(` Generate a Simple NextJs component for  ${name}`);
 
-      const result = await network.run(name);
+      const result = await network.run(userQuery);
 
       const sandboxUrl = await step.run("get-sandbox-url",async()=>{
         const sandbox = await getSandbox(sandboxId);

@@ -37,12 +37,12 @@ export const appRouter = createTRPCRouter({
   }), 
   
   // Testing Inngest Agent Kit
-  generate:baseProcedure.input(z.object({name:z.string()})).mutation(async({input})=>{
+  generate:baseProcedure.input(z.object({userQuery:z.string()})).mutation(async({input})=>{
 
      await inngest.send({
       name:"waves/ai-generate",
       data:{
-        name:input.name,
+        userQuery:input.userQuery,
       }
      })
 

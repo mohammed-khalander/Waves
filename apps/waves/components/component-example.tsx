@@ -181,7 +181,7 @@ function FormExample() {
 
   const callInngest = async (evt:React.FormEvent<HTMLFormElement>)=>{
     evt.preventDefault();
-    createComponent.mutate({name})
+    createComponent.mutate({userQuery:name})
   }
 
   return (
