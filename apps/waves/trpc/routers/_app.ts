@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { baseProcedure, createTRPCRouter } from '../init';
 import { TRPCError } from '@trpc/server';
 import { inngest } from '@/inngest/client';
+import { messageRouter } from '@/modules/messages/server/route';
 export const appRouter = createTRPCRouter({
   hello: baseProcedure
     .input(
@@ -48,7 +49,13 @@ export const appRouter = createTRPCRouter({
 
      return {message:"Inngest BG JOb Triggered, In a while the Component will be created"}
 
-  })
+  }),
+
+  // Our Main Routers
+
+  message:messageRouter,
+  
+
 
 });
 // export type definition of API

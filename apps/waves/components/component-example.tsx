@@ -172,27 +172,27 @@ function FormExample() {
 
   const trpc = useTRPC();
 
-  const createComponent = useMutation(trpc.generate.mutationOptions({
+  const createComponent = useMutation(trpc.message.create.mutationOptions({
     onSuccess:(data)=>{
-      toast.success(data.message);
+      toast.success(data.content);
     }
   }))
 
 
   const callInngest = async (evt:React.FormEvent<HTMLFormElement>)=>{
     evt.preventDefault();
-    createComponent.mutate({userQuery:name})
+    createComponent.mutate({userPrompt:name})
   }
+
+  const {data,isPending} = useQuery(trpc.message.getMany.queryOptions());
+
+
+
+
 
   return (
     <Example title="Form">
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>User Information</CardTitle>
-          <CardDescription>Please fill in your details below</CardDescription>
-          <CardAction>
-          </CardAction>
-        </CardHeader>
         <CardContent>
           <form onSubmit={callInngest}>
             <FieldGroup>
@@ -207,59 +207,18 @@ function FormExample() {
                     onChange={(evt)=>setName(evt.target.value)}
                   />
                 </Field>
-                <Field>
-                  <FieldLabel htmlFor="small-form-role">Role</FieldLabel>
-                  <Select defaultValue="">
-                    <SelectTrigger id="small-form-role">
-                      <SelectValue placeholder="Select a role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="developer">Developer</SelectItem>
-                        <SelectItem value="designer">Designer</SelectItem>
-                        <SelectItem value="manager">Manager</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </Field>
               </div>
-              <Field>
-                <FieldLabel htmlFor="small-form-framework">
-                  Framework
-                </FieldLabel>
-                <Combobox items={frameworks}>
-                  <ComboboxInput
-                    id="small-form-framework"
-                    placeholder="Select a framework"
-                  />
-                  <ComboboxContent>
-                    <ComboboxEmpty>No frameworks found.</ComboboxEmpty>
-                    <ComboboxList>
-                      {(item) => (
-                        <ComboboxItem key={item} value={item}>
-                          {item}
-                        </ComboboxItem>
-                      )}
-                    </ComboboxList>
-                  </ComboboxContent>
-                </Combobox>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="small-form-comments">Comments</FieldLabel>
-                <Textarea
-                  id="small-form-comments"
-                  placeholder="Add any additional comments"
-                />
-              </Field>
               <Field orientation="horizontal">
                 <Button type="submit">Submit</Button>
-                <Button variant="outline" type="button">
-                  Cancel
-                </Button>
               </Field>
             </FieldGroup>
           </form>
+          <div>
+            {
+              isPending?"Loading....":
+              JSON.stringify(data,null,2)
+            }
+          </div>
         </CardContent>
       </Card>
     </Example>

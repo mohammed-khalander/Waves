@@ -6,7 +6,7 @@
 */
 
 
-import { openai, createAgent, createTool, createNetwork } from "@inngest/agent-kit";
+import { openai, createAgent, createTool, createNetwork, type Tool } from "@inngest/agent-kit";
 import { Sandbox } from '@e2b/code-interpreter';
 import { z } from "zod";
 
@@ -16,12 +16,25 @@ import { getSandbox, lastAssistantTextMessageContent } from "./utils";
 import { SYSTEM_PROMPT } from "@/inngest/prompts";
 
 
+import prisma from "@/lib/prisma";
+
+
+
+
+interface AgentState{
+    summary:string;
+    files:{
+        [path:string]:string
+    }
+}
+
+
 
 export const aiJob = inngest.createFunction(
     {id:"ai-job"},
     {event:"waves/ai-generate"},
     async ({event,step})=>{
-      const userQuery = event.data.userQuery;
+      const userPrompt = event.data.userPrompt;
 
       const sandboxId = await step.run("create-sandbox",async()=>{
         const sandbox = await Sandbox.create("khalandermohammed734/waves-nextjs");
@@ -72,7 +85,7 @@ export const aiJob = inngest.createFunction(
           parameters:z.object({
               files:z.array(z.object({ path:z.string(), content:z.string() }))
           }),
-          handler:async ({files},{step,network})=>{
+          handler:async ({files},{step,network}:Tool.Options<AgentState> )=>{
               const newFiles = await step?.run("createOrUpdateFiles",async ()=>{
                   try{
                       const updatedFiles = network.state.data.files || { }; 
@@ -155,7 +168,7 @@ export const aiJob = inngest.createFunction(
         },
       });
     
-      const codingAgent = createAgent({
+      const codingAgent = createAgent<AgentState>({
         model,
         name: 'NextJs Developer',
         description:"An Expert FullStack Developer with vast knowledge in UI/UX",
@@ -176,7 +189,7 @@ export const aiJob = inngest.createFunction(
       });
     
     
-      const network = createNetwork({
+      const network = createNetwork<AgentState>({
         name:"NextJs Developer Network",
         agents:[codingAgent],
         maxIter:15,
@@ -189,15 +202,50 @@ export const aiJob = inngest.createFunction(
         }
       })
       // const result  = await codingAgent.run(` Generate a Simple NextJs component for  ${name}`);
+      
 
-      const result = await network.run(userQuery);
+      const result = await network.run(userPrompt);
 
       const sandboxUrl = await step.run("get-sandbox-url",async()=>{
         const sandbox = await getSandbox(sandboxId);
         const host = sandbox.getHost(3000);
         const url = `https://${host}`;
         return  url;
-      })
+      });
+
+
+
+      await step.run("save-result",async()=>{    
+          const isError = !result.state.data.summary || Object.keys(result.state.data.files ?? {}).length === 0;
+          if(isError){
+            return await prisma.message.create({
+                data:{
+                    content:"Agent Limit Exceeded while generating Response, Please Try Again After Some Time",
+                    role:"ASSISTANT",
+                    type:"ERROR"
+                }
+            })
+          }
+          return await prisma.message.create({
+              data:{
+                  content:result.state.data.summary,
+                  role:"ASSISTANT",
+                  type:"RESULT",
+                  
+                  fragment:{
+                      create:{
+                          sandboxUrl:sandboxUrl,
+                          title: "Fragment",
+                          files:result.state.data.files
+                        }
+                    }
+                    
+                }
+          })
+            
+    })
+
+    
 
       return { sandboxId:sandboxId, sandboxUrl:sandboxUrl, files:result.state.data.files, summary:result.state.data.summary }
     }
