@@ -2,7 +2,12 @@ import { z } from 'zod';
 import { baseProcedure, createTRPCRouter } from '../init';
 import { TRPCError } from '@trpc/server';
 import { inngest } from '@/inngest/client';
+
+
 import { messageRouter } from '@/modules/messages/server/route';
+import { projectRouter } from '@/modules/projects/server/route';
+
+
 export const appRouter = createTRPCRouter({
   hello: baseProcedure
     .input(
@@ -53,8 +58,8 @@ export const appRouter = createTRPCRouter({
 
   // Our Main Routers
 
+  project:projectRouter,
   message:messageRouter,
-  
 
 
 });

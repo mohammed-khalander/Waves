@@ -160,6 +160,9 @@ const frameworks = [
   "Astro",
 ] as const
 
+
+import { useRouter } from "next/navigation"
+
 function FormExample() {
   const [notifications, setNotifications] = React.useState({
     email: true,
@@ -171,20 +174,26 @@ function FormExample() {
   const [name,setName] = React.useState("");
 
   const trpc = useTRPC();
+  const router = useRouter();
 
-  const createComponent = useMutation(trpc.message.create.mutationOptions({
+  const createComponent = useMutation(trpc.project.create.mutationOptions({
     onSuccess:(data)=>{
-      toast.success(data.content);
+      toast.success(data.name);
+      router.push(`project/${data.id}`);
+    },
+    onError:(error)=>{
+      toast.error(error.message); 
     }
   }))
 
 
   const callInngest = async (evt:React.FormEvent<HTMLFormElement>)=>{
     evt.preventDefault();
-    createComponent.mutate({userPrompt:name})
+    createComponent.mutate({userPrompt:name })
   }
 
-  const {data,isPending} = useQuery(trpc.message.getMany.queryOptions());
+  const {data,isPending} = useQuery(trpc.project.getMany.queryOptions());
+
 
 
 
@@ -210,6 +219,7 @@ function FormExample() {
               </div>
               <Field orientation="horizontal">
                 <Button type="submit">Submit</Button>
+                <Button type="button" onClick={()=>{ !isPending && data && router.push(`/project/${data[0].id}`) }} >Project</Button>
               </Field>
             </FieldGroup>
           </form>

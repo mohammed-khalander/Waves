@@ -6,24 +6,29 @@ import { inngest } from "@/inngest/client";
 
 
 export const messageRouter = createTRPCRouter({
-    create:baseProcedure.input(z.object({userPrompt:z.string().min(1,{message:"Prompt is required"})})).mutation(async ({ctx,input})=>{
+    create:baseProcedure.input(z.object({userPrompt:z.string().min(1,{message:"Prompt is required"}),projectId:z.string().min(1,{message:"Project Id is Required"})})).mutation(async ({ctx,input})=>{
         const createMessage = await prisma.message.create({
             data:{
                 content:input.userPrompt,
                 role:"USER",
-                type:"RESULT"
+                type:"RESULT",
+                projectId:input.projectId
             }
         });
         await inngest.send({
             name:"waves/ai-generate",
             data:{
-                userPrompt:input.userPrompt
+                userPrompt:input.userPrompt,
+                projectId:input.projectId,
             }
         })
         return createMessage;
     }),
-    getMany:baseProcedure.query(async ()=>{
+    getMany:baseProcedure.input(z.object({ projectId:z.string().min(1,{message:"Project ID is required"}) })).query(async ({input})=>{
         const messages = await prisma.message.findMany({
+            where:{
+                projectId:input.projectId
+            },
             include:{
                 fragment:false
             },

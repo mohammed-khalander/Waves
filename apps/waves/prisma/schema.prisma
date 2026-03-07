@@ -34,6 +34,22 @@ datasource db {
 /* Testing Schema */
 
 
+
+model Project {
+  id String @id @default(uuid())
+  name String
+
+  messages Message[]
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
+
+
+
+
 enum MessageRole {
   USER
   ASSISTANT
@@ -50,6 +66,9 @@ model Message {
   role MessageRole
   type MessageType
 
+  projectId String
+  project Project @relation(fields: [projectId],references: [id],onDelete: Cascade)
+  
   fragment Fragment?
 
   createdAt DateTime @default(now())

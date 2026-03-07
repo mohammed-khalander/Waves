@@ -35,6 +35,7 @@ export const aiJob = inngest.createFunction(
     {event:"waves/ai-generate"},
     async ({event,step})=>{
       const userPrompt = event.data.userPrompt;
+      const projectId = event.data.projectId;
 
       const sandboxId = await step.run("create-sandbox",async()=>{
         const sandbox = await Sandbox.create("khalandermohammed734/waves-nextjs");
@@ -222,7 +223,8 @@ export const aiJob = inngest.createFunction(
                 data:{
                     content:"Agent Limit Exceeded while generating Response, Please Try Again After Some Time",
                     role:"ASSISTANT",
-                    type:"ERROR"
+                    type:"ERROR",
+                    projectId:projectId
                 }
             })
           }
@@ -231,6 +233,7 @@ export const aiJob = inngest.createFunction(
                   content:result.state.data.summary,
                   role:"ASSISTANT",
                   type:"RESULT",
+                  projectId:projectId,
                   
                   fragment:{
                       create:{
