@@ -48,8 +48,6 @@ model Project {
 }
 
 
-
-
 enum MessageRole {
   USER
   ASSISTANT

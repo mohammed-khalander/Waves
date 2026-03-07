@@ -6,6 +6,7 @@ import { z } from "zod";
 import { createTRPCRouter, baseProcedure } from "@/trpc/init";
 import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
+import { TRPCError } from "@trpc/server";
 
 
 export const projectRouter = createTRPCRouter({
@@ -43,5 +44,23 @@ export const projectRouter = createTRPCRouter({
             }
         })
         return projects;
-    })
+    }),
+    getOne:baseProcedure.input(z.object({projectId:z.string().min(1,{message:"Project ID is Required"})})).query(async ({input})=>{
+        const project = await prisma.project.findUnique({
+            where:{
+                id:input.projectId
+            },
+            include:{
+                messages:{
+                    include:{
+                        fragment:true,
+                    }
+                },
+            }
+        })
+        if(!project){
+            throw new TRPCError({code:"NOT_FOUND",message:"Project Not Found"});
+        }
+        return project;
+     })
 })

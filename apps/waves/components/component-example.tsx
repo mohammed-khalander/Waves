@@ -192,7 +192,7 @@ function FormExample() {
     createComponent.mutate({userPrompt:name })
   }
 
-  const {data,isPending} = useQuery(trpc.project.getMany.queryOptions());
+  const {data:projects,isPending} = useQuery(trpc.project.getMany.queryOptions());
 
 
 
@@ -219,14 +219,14 @@ function FormExample() {
               </div>
               <Field orientation="horizontal">
                 <Button type="submit">Submit</Button>
-                <Button type="button" onClick={()=>{ !isPending && data && router.push(`/project/${data[0].id}`) }} >Project</Button>
+                <Button type="button" onClick={()=>{ !isPending && projects && router.push(`/project/${projects[0].id}`) }} >Project</Button>
               </Field>
             </FieldGroup>
           </form>
           <div>
             {
               isPending?"Loading....":
-              JSON.stringify(data,null,2)
+              JSON.stringify(projects,null,2)
             }
           </div>
         </CardContent>
