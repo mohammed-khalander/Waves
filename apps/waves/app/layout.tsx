@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   title: "Waves",
   description: "Websites With Prompt",
   icons:{
-    icon:"./logo.svg",
+    icon:"/logo.svg",
   }
 };
 
