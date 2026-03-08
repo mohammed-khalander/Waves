@@ -142,7 +142,7 @@ export const aiJob = inngest.createFunction(
 
       const finishTask = createTool({
         name:"finish_task",
-        description:"Call this tool when code generation is completed",
+        description:"Call this tool ONLY when the task is fully completed and all files are generated.",
         parameters:z.object({
             summary:z.string(),
         }),
@@ -188,7 +188,15 @@ export const aiJob = inngest.createFunction(
           }
         }
       });
-    
+
+      /**
+       * Lifecycle here, like when will the above onResponse lifecycle will run and when will the below router runs ?, like based on the GPT/LLM Response
+       * 
+       * The above onResponse lifecycle will run after every single llm call(which might include multiple different tool calls within one single network call(1 iteration))
+       * Multiple llm calls in the sense, llm might call 'createOrUpdate' tool, 'readFiles' tool and so on.
+       * and for the below 'router' of 'network', for one single n/w call, multiple above onResponse lifecycle might be run,
+       * 
+       */
     
       const network = createNetwork<AgentState>({
         name:"NextJs Developer Network",

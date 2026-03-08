@@ -15,21 +15,18 @@ export const PreviewContainer = ({projectID}:Props)=>{
 
     const { data:messages } = useSuspenseQuery(trpc.message.getMany.queryOptions({projectId:projectID}));
 
+    const lastMessage = messages.length-1;
+    console.log(messages[lastMessage]);
+
 
     return(
         <div className="h-full">
-            {
-                messages.map((message)=>{
-                    if(message.fragment?.sandboxUrl){
-                        return(
-                            <iframe src={message.fragment.sandboxUrl} className="h-full w-full">
-                            {/* <iframe src={"https://aceternity.com"} className="h-full w-full"> */}
-                                SandBox URL Dead
-                            </iframe>
-                        )
-                    }
-                })
-            }
+            
+            <iframe src={messages[lastMessage]?.fragment?.sandboxUrl} className="h-full w-full">
+            {/* <iframe src={"https://aceternity.com"} className="h-full w-full"> */}
+                SandBox URL Dead
+            </iframe>
+                        
         </div>
     )
 }

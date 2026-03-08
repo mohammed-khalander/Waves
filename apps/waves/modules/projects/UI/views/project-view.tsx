@@ -23,7 +23,7 @@ interface Props{
 export const ProjectView = ({projectID}:Props)=>{
     
     return(
-        <div className="h-screen w-full bg-blue-700">
+        <div className="h-screen w-full">
 
             <ResizablePanelGroup orientation="horizontal" >
 
