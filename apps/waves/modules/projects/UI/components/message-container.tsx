@@ -27,7 +27,6 @@ export const MessageContainer = ({projectID}:Props)=>{
 
 
     useEffect(()=>{
-      console.log(scroll.current);
       scroll.current?.scrollIntoView({behavior:"smooth"});
     },[messages])
 

@@ -6,7 +6,7 @@ import { inngest } from "@/inngest/client";
 
 
 export const messageRouter = createTRPCRouter({
-    create:baseProcedure.input(z.object({userPrompt:z.string().min(1,{message:"Prompt is required"}).max(1000,"Sorry, Prompt Can't excceed 1000 characters"),projectId:z.string().min(1,{message:"Project Id is Required"})})).mutation(async ({ctx,input})=>{
+    create:baseProcedure.input(z.object({userPrompt:z.string().min(1,{message:"Prompt is required"}).max(1000,"Sorry, Prompt Can't exceed 1000 characters"),projectId:z.string().min(1,{message:"Project Id is Required"})})).mutation(async ({ctx,input})=>{
         const createMessage = await prisma.message.create({
             data:{
                 content:input.userPrompt,

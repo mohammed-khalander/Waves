@@ -54,8 +54,7 @@ interface Props{
 
 
 const formSchema = z.object({
-  prompt:z.string().min(1,{message:"Prompt is required"}).max(1000,"Sorry, Prompt Can't excceed 1000 characters"),
-})
+  prompt:z.string().min(1,{message:"Prompt is required"}).max(1000,"Sorry, Prompt can't exceed 1000 characters"),})
 
 
 

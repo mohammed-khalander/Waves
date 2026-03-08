@@ -107,8 +107,7 @@ interface FragmentCardProps{
 
 const FragmentCard = ({fragment,isActiveFragment,onFragmentClick}:FragmentCardProps)=>{
     return(
-        <button className={cn("flex items-start text-start gap-2 border runded-lg bg-muted w-fit p-3 hover:bg-secondary transition-colors", isActiveFragment && "bg-primary text-primary-foreground border-primary hover:bg-primary" )} onClick={()=>{ fragment && onFragmentClick(fragment) }} >
-            <Code2Icon className="size-4 mt-0.5" /> 
+        <button className={cn("flex items-start text-start gap-2 border rounded-lg bg-muted w-fit p-3 hover:bg-secondary transition-colors", isActiveFragment && "bg-primary text-primary-foreground border-primary hover:bg-primary" )} onClick={()=>{ fragment && onFragmentClick(fragment) }} >            <Code2Icon className="size-4 mt-0.5" /> 
             <div className="flex flex-col flex-1">
                 <span className="text-sm font-medium line-clamp-1">
                     {fragment?.title}
