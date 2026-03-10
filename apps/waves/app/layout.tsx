@@ -6,6 +6,7 @@ import "./globals.css";
 import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider"
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 
 const outfit = Outfit({subsets:['latin'],variable:'--font-sans'});
@@ -45,7 +46,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TRPCReactProvider>
-              {children}
+              <TooltipProvider>
+                {children}
+              </TooltipProvider>
             </TRPCReactProvider>
         </ThemeProvider>
         <Toaster/>
