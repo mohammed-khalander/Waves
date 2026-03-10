@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider"
 
 
 const outfit = Outfit({subsets:['latin'],variable:'--font-sans'});
@@ -33,13 +34,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={outfit.variable}>
+    <html lang="en" className={outfit.variable} suppressHydrationWarning >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TRPCReactProvider>
-          {children}
-        </TRPCReactProvider>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TRPCReactProvider>
+              {children}
+            </TRPCReactProvider>
+        </ThemeProvider>
         <Toaster/>
       </body>
     </html>

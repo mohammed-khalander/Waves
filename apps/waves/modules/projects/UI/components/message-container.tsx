@@ -1,7 +1,7 @@
 "use client";
 
 
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -10,12 +10,17 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { MessageCard } from "./message-card";
 import { MessageForm } from "./message-form";
+import { Fragment } from "@/prisma/prisma/client";
+import { MessageLoading } from "./message-loading";
+import { ProjectHeader } from "./project-header";
 
 interface Props{
     projectID:string;
+    activeFragment:Fragment | null;
+    setActiveFragment:(fragment: Fragment|null)=>void;
 }
 
-export const MessageContainer = ({projectID}:Props)=>{
+export const MessageContainer = ({projectID,activeFragment,setActiveFragment}:Props)=>{
 
     const scroll = useRef<HTMLDivElement|null>(null);
 
@@ -23,12 +28,32 @@ export const MessageContainer = ({projectID}:Props)=>{
     const router = useRouter();
 
     const { data:messages, isPending } = useSuspenseQuery(trpc.message.getMany.queryOptions({projectId:projectID}));
+    // const { data:messages, isPending } = useSuspenseQuery(trpc.message.getMany.queryOptions({projectId:projectID},{refetchInterval:5000}));
+    // It fetches messages for every 5 seconds
+    // TODO: This is just temporary, standardize it later
+
+
+
     const { data:project } = useSuspenseQuery(trpc.project.getOne.queryOptions({projectId:projectID}));
 
+    // useEffect(()=>{ 
+    //   const lastAssistantMessageWithFragment = messages.findLast((message)=>{
+    //     return message.role == "ASSISTANT" && !!message.fragment;
+    //   })
+
+    //   if(lastAssistantMessageWithFragment && lastAssistantMessageWithFragment.fragment){
+    //     setActiveFragment(lastAssistantMessageWithFragment.fragment);
+    //   }
+
+    // },[messages,setActiveFragment]);
 
     useEffect(()=>{
       scroll.current?.scrollIntoView({behavior:"smooth"});
     },[messages])
+
+
+    const lastMessage = messages[messages.length-1];
+    const isLastMessageUser = lastMessage?.role == "USER";
 
 
     return(
@@ -36,16 +61,20 @@ export const MessageContainer = ({projectID}:Props)=>{
           {/* <header className="bg-orange-500 p-4">
             Project
           </header> */}
+          <Suspense>
+            <ProjectHeader projectId={projectID} />
+          </Suspense>
            <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
               <div className="pt-2 pr-1">
                 {
                   messages.map((message)=>{
                     return(
-                      <MessageCard key={message.id} content={message.content} role={message.role} fragment={message.fragment} createdAt={message.createdAt} isActiveFragment={false} onFragmentClick={()=>{  }} type={message.type} />
+                      <MessageCard key={message.id} content={message.content} role={message.role} fragment={message.fragment} createdAt={message.createdAt} isActiveFragment={activeFragment?.id==message.fragment?.id} onFragmentClick={()=>{ setActiveFragment(message.fragment) }} type={message.type} />
                     )
                   })
                 }
               </div>
+              { isLastMessageUser && <MessageLoading/> }
            <div ref={scroll}> </div>
            </div>
            <div className="relative p-3 pt-1">
