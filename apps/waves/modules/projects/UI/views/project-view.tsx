@@ -4,6 +4,10 @@ import { Suspense, useState } from "react";
 
 
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+
+
 
 import { MessageContainer } from "../components/message-container";
 import { FragmentWeb } from "../components/fragment-web";
@@ -11,11 +15,12 @@ import { Fragment } from "@/prisma/prisma/client";
 // import { ProjectHeader } from "../components/project-header";
 
 
+import { CodeView } from "@/components/code-view";
 
 
 
 interface Props{
-    projectID: string;
+  projectID: string;
 }
 
 
@@ -25,13 +30,17 @@ interface Props{
 export const ProjectView = ({projectID}:Props)=>{
 
     const [activeFragment,setActiveFragment] = useState<Fragment | null>(null);
+
+    const [tabState,setTabState] = useState<"preview"|"code">("preview");
+
+
     
     return(
         <div className="h-screen w-full">
 
             <ResizablePanelGroup orientation="horizontal" >
 
-              <ResizablePanel defaultSize={30} minSize={20} className="flex flex-col" > {/** TODO:- add min-h-0 */}
+              <ResizablePanel defaultSize={30} minSize={20} className="flex flex-col" >
                 {/* <ProjectHeader projectId={projectID} /> */}
                 <Suspense fallback={<h1> Loading Messages..... </h1>} >
                    <MessageContainer projectID={projectID} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />  
@@ -41,9 +50,36 @@ export const ProjectView = ({projectID}:Props)=>{
               <ResizableHandle withHandle />
 
               <ResizablePanel defaultSize={70} minSize={50}  >
-                   { !!activeFragment &&
-                    <FragmentWeb projectID={projectID} data={activeFragment} />
-                   }
+                <Tabs defaultValue="preview" value={tabState} onValueChange={(value)=>{ setTabState(value as "preview" | "code") }} className="h-full gap-y-0" >
+                    <div className="w-full flex items-center p-2 border-b gap-x-2">
+                        <TabsList className="h-8 p-0 border rounded-md">
+                            <TabsTrigger value="preview" className="rounded-md">
+                                <EyeIcon/> <span>Preview</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="code" className="rounded-md">
+                                <CodeSquareIcon/> <span>Code</span>
+                            </TabsTrigger>
+                        </TabsList>
+                        <div className="ml-auto flex items-center gap-x-2">
+                            <Button asChild size="sm" variant="default">
+                                <Link href="/pricing" > <CrownIcon/> Upgrade </Link>
+                            </Button>
+                        </div>
+                    </div>
+                    <TabsContent value="code" className="overflow-y-scroll">
+                      {
+                        !!activeFragment?.files && (
+                          <FileExplorer files={activeFragment.files as { [path:string]:string } } />
+                        )
+                      }
+                    </TabsContent>
+                    <TabsContent value="preview">
+                        { !!activeFragment &&
+                            <FragmentWeb projectID={projectID} data={activeFragment} />
+                        }
+                    </TabsContent>
+                </Tabs>
+                   
               </ResizablePanel>
 
             </ResizablePanelGroup>
@@ -59,4 +95,89 @@ export const ProjectViewLoading = ()=>{
 
 export const ProjectViewError = ()=>{
     return <h1>Error While Rendering Project</h1>
+}
+
+
+
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { CodeSquareIcon, CrownIcon, EyeIcon } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { FileExplorer } from "@/components/code-view/file-explorer";
+
+
+export function TabsDemo() {
+  return (
+    <Tabs defaultValue="overview" className="w-100">
+      <TabsList>
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <TabsTrigger value="reports">Reports</TabsTrigger>
+        <TabsTrigger value="settings">Settings</TabsTrigger>
+      </TabsList>
+      <TabsContent value="overview">
+        <Card>
+          <CardHeader>
+            <CardTitle>Overview</CardTitle>
+            <CardDescription>
+              View your key metrics and recent project activity. Track progress
+              across all your active projects.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            You have 12 active projects and 3 pending tasks.
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="analytics">
+        <Card>
+          <CardHeader>
+            <CardTitle>Analytics</CardTitle>
+            <CardDescription>
+              Track performance and user engagement metrics. Monitor trends and
+              identify growth opportunities.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Page views are up 25% compared to last month.
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="reports">
+        <Card>
+          <CardHeader>
+            <CardTitle>Reports</CardTitle>
+            <CardDescription>
+              Generate and download your detailed reports. Export data in
+              multiple formats for analysis.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            You have 5 reports ready and available to export.
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="settings">
+        <Card>
+          <CardHeader>
+            <CardTitle>Settings</CardTitle>
+            <CardDescription>
+              Manage your account preferences and options. Customize your
+              experience to fit your needs.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Configure notifications, security, and themes.
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  )
 }
