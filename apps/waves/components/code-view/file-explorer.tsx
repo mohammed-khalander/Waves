@@ -1,4 +1,4 @@
-import { CopyCheckIcon, CopyIcon, FolderIcon } from "lucide-react";
+import { CopyCheckIcon, CopyIcon, FolderIcon, FolderOpen } from "lucide-react";
 import { useState, useCallback } from "react";
 
 import { Hint } from "@/components/hint";
@@ -70,7 +70,13 @@ export const FileExplorer = ({
         Object.keys(files).map((fileName)=>{
           return(
             <Button variant="outline" className="w-[80%]" onClick={()=>{ handleFileSelect(fileName) }} key={fileName} >
-              <FolderIcon/> <span className="pl-2"> {fileName} </span>
+              {
+                fileName==selectedFile ?
+                <FolderOpen/>:
+                <FolderIcon/> 
+              }
+              <span className="pl-2"> {fileName} </span>
+
             </Button>
           )
         })
