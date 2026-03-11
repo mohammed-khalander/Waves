@@ -96,7 +96,7 @@ const FileBreadcrumb = ({ filePath }: FileBreadcrumbProps) => {
 
 interface FileExplorerProps {
   files: FileCollection;
-};;
+};
 
 export const FileExplorer = ({
   files,
@@ -165,7 +165,7 @@ export const FileExplorer = ({
           </div>
         ) : (
           <div className="flex h-full items-center justify-center text-muted-foreground">
-            Select a file to view it&apos;s content
+            Select a file to view its content
           </div>
         )}
       </ResizablePanel>
