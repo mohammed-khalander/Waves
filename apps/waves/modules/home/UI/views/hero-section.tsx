@@ -1,3 +1,5 @@
+"use client";
+
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -5,6 +7,14 @@ import { TextEffect } from '@/components/ui/text-effect'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { HeroHeader } from '../components/header'
 import { PromptDialogue } from '@/modules/home/UI/components/prompt-dialogue'
+
+import { useTRPC } from '@/trpc/client'
+import { useRouter } from 'next/navigation'
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { Suspense } from 'react';
+import { ProjectCards } from '../components/project-cards';
+import Footer from '../components/footer';
 
 
 const transitionVariants = {
@@ -27,11 +37,69 @@ const transitionVariants = {
     },
 }
 
+
+const exampleApplication = [
+    {
+        id:1,
+        text:"Build Netflix Clone",
+        prompt:"Build a minimal version of single page netflix clone, it should be as simple as possible, no complexities, and only one page code"
+    },
+    {
+        id:2,
+        text:"Build an Admin Dashboard",
+        prompt:"Build a minimal version of admin dashboard,it should be as simple as possible, no complexities, and only one page code"
+    },
+    {
+        id:3,
+        text:"Build a kanban board",
+        prompt:"Build a minimal version of kanban board,it should be as simple as possible, no complexities, and only one page code"
+    },
+    {
+        id:4,
+        text:"Build Youtube Clone",
+        prompt:"Build a minimal version of single page youtube clone, it should be as simple as possible, no complexities, and only one page code"
+    },
+    {
+        id:5,
+        text:"Build a landing page, ",
+        prompt:"Build a minimal landing page for BMS College, it should be as simple as possible, no complexities, and only one page code"
+    },
+    {
+        id:6,
+        text:"Build a todo app",
+        prompt:"Build a minimalist todo application"
+    },
+]
+
+
+
 export default function HeroSection() {
+
+    
+    const trpc = useTRPC();
+    const router = useRouter();    
+
+    const createMessage = useMutation(trpc.project.create.mutationOptions({
+        onSuccess:(data)=>{
+            toast.success(`Project Started :- ${data.name} `);
+            router.push(`/project/${data.id}`);
+        },
+        onError:(error)=>{
+            toast.error(`Something Went Wrong ${error.message}`);
+        }
+    }));
+
+    async function onSubmit(prompt:string){
+        toast.loading("Prompt Submitting");
+        await createMessage.mutateAsync({ userPrompt: prompt });  
+        toast.dismiss();
+    }
+
+
     return (
         <>
             <HeroHeader />
-            <main className="overflow-hidden">
+            <main className="h-full">
                 <section>
                     <div className="relative pt-24 md:pt-36">
 
@@ -74,6 +142,19 @@ export default function HeroSection() {
                                     Waves lets you design, build, and launch stunning websites in minutes. Powerful components, smooth animations, and full control — all in one place.
                                 </TextEffect>
 
+                                <AnimatedGroup variants={transitionVariants} className='mt-5' >
+                                    <div
+                                        className="hover:bg-background dark:hover:border-t-border bg-muted/30 group flex justify-center items-center gap-4 rounded-md border w-fit mx-auto p-2 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950 flex-wrap ">
+                                        {
+                                            exampleApplication.map((app)=>{
+                                                return(
+                                                    <Button key={app.id} variant="outline" className="text-foreground text-sm max-md:text-xs " onClick={()=>{ onSubmit(app.prompt) }} >{app.text}</Button>
+                                                )
+                                            })
+                                        }                                        
+                                    </div>
+                                </AnimatedGroup>
+
                                 <AnimatedGroup
                                     variants={{
                                         container: {
@@ -108,6 +189,10 @@ export default function HeroSection() {
                     </div>
                 </section>
             </main>
+            <Suspense fallback={<h1 className='w-full flex justify-center h-10' > Loading Projects.... </h1>} >
+                <ProjectCards/>
+            </Suspense>
+            <Footer/>
         </>
     )
 }
