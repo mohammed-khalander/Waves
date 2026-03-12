@@ -84,7 +84,7 @@ export const FileExplorer = ({
 
 
       </ResizablePanel>
-      <ResizableHandle className="hover:bg-primary transition-colors" />
+      <ResizableHandle className="hover:bg-primary transition-colors" withHandle />
       <ResizablePanel defaultSize={70} minSize={50}>
         {selectedFile && files[selectedFile] ? (
           <div className="h-full w-full flex flex-col">

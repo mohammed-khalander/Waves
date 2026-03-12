@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -10,35 +9,17 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
-  FieldLabel,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group"
-
 
 import TextAreaAutosize from "react-textarea-autosize";
 
 import { useState } from "react";
 
 
-import { ArrowUpIcon, Loader2Icon, LoaderIcon, SendIcon } from "lucide-react";
+import { LoaderIcon, SendIcon } from "lucide-react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client"
@@ -54,7 +35,8 @@ interface Props{
 
 
 const formSchema = z.object({
-  prompt:z.string().min(1,{message:"Prompt is required"}).max(1000,"Sorry, Prompt can't exceed 1000 characters"),})
+  prompt:z.string().min(1,{message:"Prompt is required"}).max(1000,"Sorry, Prompt can't exceed 1000 characters"),
+});
 
 
 
