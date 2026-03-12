@@ -23,7 +23,7 @@ export const CodeView = ({code,lang}:Props)=>{
     },[code]);
 
     return(
-        <pre className="" >
+        <pre className="p-4" >
             <code className={`language-${lang}`} >
                 {code}
             </code>
