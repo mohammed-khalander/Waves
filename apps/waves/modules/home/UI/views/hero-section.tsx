@@ -79,7 +79,7 @@ export default function HeroSection() {
     const trpc = useTRPC();
     const router = useRouter();    
 
-    const createMessage = useMutation(trpc.project.create.mutationOptions({
+    const createProject = useMutation(trpc.project.create.mutationOptions({
         onSuccess:(data)=>{
             toast.success(`Project Started :- ${data.name} `);
             router.push(`/project/${data.id}`);
@@ -91,7 +91,7 @@ export default function HeroSection() {
 
     async function onSubmit(prompt:string){
         toast.loading("Prompt Submitting");
-        await createMessage.mutateAsync({ userPrompt: prompt });  
+        await createProject.mutateAsync({ userPrompt: prompt });  
         toast.dismiss();
     }
 
@@ -148,7 +148,7 @@ export default function HeroSection() {
                                         {
                                             exampleApplication.map((app)=>{
                                                 return(
-                                                    <Button key={app.id} variant="outline" className="text-foreground text-sm max-md:text-xs " onClick={()=>{ onSubmit(app.prompt) }} >{app.text}</Button>
+                                                    <Button key={app.id} variant="outline" className="text-foreground text-sm max-md:text-xs " onClick={()=>{ onSubmit(app.prompt) }} disabled={createProject.isPending} >{app.text}</Button>
                                                 )
                                             })
                                         }                                        
