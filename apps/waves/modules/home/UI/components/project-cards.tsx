@@ -18,7 +18,6 @@ export const ProjectCards = ()=>{
     
     const {data:projects} = useSuspenseQuery(trpc.project.getMany.queryOptions());
 
-    console.log(projects);
 
 
     return(
