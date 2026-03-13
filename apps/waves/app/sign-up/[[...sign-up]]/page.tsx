@@ -1,6 +1,6 @@
 import { DottedGlowBackground } from '@/components/ui/dotted-glow-background'
 import { HeroHeader } from '@/modules/home/UI/components/header'
-import { SignIn } from '@clerk/nextjs'
+import { SignUp } from '@clerk/nextjs'
 
 export default function Page() {
   return(
@@ -10,7 +10,7 @@ export default function Page() {
     </div>
     <div className="h-full min-h-screen flex justify-center  ">
       <div className='flex items-center justify-center mt-10'>
-        <SignIn />
+        <SignUp />
       </div>
     </div>
       <DottedGlowBackground className='-z-10' />

@@ -1,56 +1,15 @@
 'use client'
 import Link from 'next/link'
-import { Logo, LogoIcon } from '@/components/logo'
+import { LogoIcon } from '@/components/logo'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
+import { ModeToggle } from '@/components/mode-toggle'
 
-
-
-
-
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-export function ModeToggle() {
-  const { setTheme } = useTheme()
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className='max-md:w-full' >
-          <Sun className="h-4 w-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-4 w-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
-
-
-
-
+import { SignInButton, SignUpButton, } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs'
+import { UserControl } from '@/components/user-control'
 
 const menuItems = [
     { name: 'Features', href: '#link' },
@@ -59,7 +18,13 @@ const menuItems = [
     { name: 'About', href: '#link' },
 ]
 
-export const HeroHeader = () => {
+interface HeaderProps{
+    SignInPage?:boolean;
+    SignUpPage?:boolean;
+}
+
+
+export const HeroHeader = ({ SignInPage=false,SignUpPage=false }:HeaderProps) => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
 
@@ -70,6 +35,11 @@ export const HeroHeader = () => {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
+
+    const { isSignedIn, isLoaded } = useUser();
+
+
     return (
         <header>
             <nav
@@ -123,26 +93,39 @@ export const HeroHeader = () => {
                                     ))}
                                 </ul>
                             </div>
-                            <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                                <ModeToggle/>
-                                <Button
-                                    asChild
-                                    variant="outline"
-                                    size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href="#">
-                                        <span>Login</span>
-                                    </Link>
-                                </Button>
-                                <Button
-                                    asChild
-                                    size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href="#">
-                                        <span>Sign Up</span>
-                                    </Link>
-                                </Button>
+                            <ModeToggle isSignedIn={isSignedIn} />
+                            {
+                                !isLoaded?
+                                (
+                                    <>
+                                    <div className="flex space-x-2">
+                                        <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]" />
+                                        <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.15s]" />
+                                        <div className="h-3 w-3 animate-bounce rounded-full bg-primary" />
+                                    </div>
+                                    </>
+                                ):
+                                !isSignedIn?
+                            <div className={`flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit ${ (SignUpPage || SignInPage) && "hidden"} `}>
+                                <SignInButton>
+                                    <Button
+                                        variant="outline"
+                                        size="sm">
+                                            Login
+                                    </Button>
+                                </SignInButton>
+                                <SignUpButton>
+                                    <Button
+                                        size="sm">
+                                            Sign Up
+                                    </Button>
+                                </SignUpButton>
+                            </div>:
+                            <div>
+                                <UserControl showName={false} />
                             </div>
+                        }
+
                         </div>
                     </div>
                 </div>

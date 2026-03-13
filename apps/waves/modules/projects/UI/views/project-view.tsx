@@ -19,6 +19,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FileExplorer } from "@/components/code-view/file-explorer";
 import { LoadingScreen } from "@/components/loading";
+import { UserControl } from "@/components/user-control";
  
 
 
@@ -68,6 +69,7 @@ export const ProjectView = ({projectID}:Props)=>{
                             <Button asChild size="sm" variant="default">
                                 <Link href="/pricing" > <CrownIcon/> Upgrade </Link>
                             </Button>
+                            <UserControl/>
                         </div>
                     </div>
                     <TabsContent value="code" className="overflow-y-scroll">
