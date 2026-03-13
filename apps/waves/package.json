@@ -19,6 +19,7 @@
     "@ai-sdk/groq": "^3.0.25",
     "@base-ui-components/react": "^1.0.0-rc.0",
     "@base-ui/react": "^1.2.0",
+    "@clerk/nextjs": "^7.0.4",
     "@e2b/cli": "^2.7.3",
     "@e2b/code-interpreter": "^2.3.3",
     "@headlessui/react": "^2.2.9",

@@ -7,6 +7,7 @@ import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ClerkProvider } from '@clerk/nextjs'
 
 
 const outfit = Outfit({subsets:['latin'],variable:'--font-sans'});
@@ -39,19 +40,21 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <TRPCReactProvider>
-              <TooltipProvider>
-                {children}
-              </TooltipProvider>
-            </TRPCReactProvider>
-        </ThemeProvider>
-        <Toaster/>
+        <ClerkProvider>
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <TRPCReactProvider>
+                  <TooltipProvider>
+                    {children}
+                  </TooltipProvider>
+                </TRPCReactProvider>
+            </ThemeProvider>
+            <Toaster/>
+        </ClerkProvider>
       </body>
     </html>
   );
