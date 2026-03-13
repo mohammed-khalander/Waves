@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { TRPCErrorFallback } from "./Error-Boundary-Trpc";
 import HeroSection from "@/modules/home/UI/views/hero-section";
 import { DottedGlowBackground } from "@/components/ui/dotted-glow-background";
+import { LoadingScreen } from "@/components/loading";
 
 export default async function Page() {
 
@@ -18,7 +19,7 @@ export default async function Page() {
         <HydrationBoundary state={dehydrate(queryClient)}>
             {/* <ErrorBoundary fallback={<h1> Something Went Wong </h1>}> */}
             <ErrorBoundary FallbackComponent={TRPCErrorFallback}>
-                <Suspense fallback={<h1> Loading the Projects..... </h1>}>
+                <Suspense fallback={<LoadingScreen message="All Projects Loading..." />}>
                     <div className="relative h-full">
                         <HeroSection />
                         <DottedGlowBackground className="-z-10" />

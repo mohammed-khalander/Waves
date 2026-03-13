@@ -21,10 +21,7 @@ export const ProjectCards = ()=>{
 
 
     return(
-        <div className="flex flex-col gap-y-10 w-full p-4 justify-center items-center mt-5">
-            <h1 className="font-bold text-6xl" >
-                Your Waves
-            </h1>
+            
             <div className="flex flex-wrap justify-center items-center gap-4 ">
             {
                 projects.map((project)=>{
@@ -45,6 +42,5 @@ export const ProjectCards = ()=>{
             }
             </div>
 
-        </div>
     )
 }

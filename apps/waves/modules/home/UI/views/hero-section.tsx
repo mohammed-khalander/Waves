@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { Suspense } from 'react';
 import { ProjectCards } from '../components/project-cards';
 import Footer from '../components/footer';
+import { LoadingScreen } from '@/components/loading';
 
 
 const transitionVariants = {
@@ -189,9 +190,14 @@ export default function HeroSection() {
                     </div>
                 </section>
             </main>
-            <Suspense fallback={<h1 className='w-full flex justify-center h-10' > Loading Projects.... </h1>} >
+        <div className="flex flex-col gap-y-10 w-full p-4 justify-center items-center mt-5">
+            <h1 className="font-bold text-6xl" >
+                Your Waves
+            </h1>
+            <Suspense fallback={<LoadingScreen message="Projects Are Loading..." />} >
                 <ProjectCards/>
             </Suspense>
+        </div>
             <Footer/>
         </>
     )

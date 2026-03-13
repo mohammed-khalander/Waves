@@ -54,7 +54,7 @@ export default function Footer() {
                         ))}
                     </nav>
                     <div className="border-t pt-8">
-                        <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} Veil, Inc. All rights reserved.</p>
+                        <p className="text-muted-foreground text-sm">&copy; {new Date().getFullYear()} Waves. All rights reserved.</p>
                     </div>                </div>
             </div>
         </footer>

@@ -18,6 +18,7 @@ import { CodeSquareIcon, CrownIcon, EyeIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FileExplorer } from "@/components/code-view/file-explorer";
+import { LoadingScreen } from "@/components/loading";
  
 
 
@@ -45,7 +46,7 @@ export const ProjectView = ({projectID}:Props)=>{
 
               <ResizablePanel defaultSize={30} minSize={20} className="flex flex-col" >
                 {/* <ProjectHeader projectId={projectID} /> */}
-                <Suspense fallback={<h1> Loading Messages..... </h1>} >
+                <Suspense fallback={<LoadingScreen message="Messages are Loading..." />} >
                    <MessageContainer projectID={projectID} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />  
                 </Suspense>
               </ResizablePanel>
@@ -93,7 +94,7 @@ export const ProjectView = ({projectID}:Props)=>{
 
 
 export const ProjectViewLoading = ()=>{
-    return <h1>Project is Loading...</h1>
+    return <LoadingScreen message="Project is Loading..." />
 }
 
 export const ProjectViewError = ()=>{
