@@ -28,7 +28,7 @@ export const ProjectCards = ()=>{
                     return(
                         <Card key={project.id} className='group relative flex flex-col gap-2 overflow-hidden pt-0 min-w-72.5'>
                             <CardHeader className='flex-1 pt-4'>
-                                <CardTitle className='text-xl font-semibold text-balance'>{project.name}</CardTitle>
+                                <CardTitle className='text-xl font-semibold text-balance capitalize'>{project.name}</CardTitle>
                             </CardHeader>
                             <CardContent className='flex-col items-start space-y-4 pt-4'>
                                 <div className="w-full flex justify-end"> Created:    {format(new Date(project.createdAt),"dd MMM yyyy")} </div>

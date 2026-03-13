@@ -7,12 +7,12 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 
-import { useRouter } from "next/navigation";
 import { MessageCard } from "./message-card";
 import { MessageForm } from "./message-form";
 import { Fragment } from "@/prisma/prisma/client";
 import { MessageLoading } from "./message-loading";
 import { ProjectHeader } from "./project-header";
+import { ArrowDownIcon } from "lucide-react";
 
 interface Props{
     projectID:string;
@@ -24,32 +24,34 @@ export const MessageContainer = ({projectID,activeFragment,setActiveFragment}:Pr
 
     const scroll = useRef<HTMLDivElement|null>(null);
 
-    const trpc = useTRPC();
-    const router = useRouter();
+    const lastAssistantMessageIDRef = useRef<String | null>(null);
 
-    const { data:messages, isPending } = useSuspenseQuery(trpc.message.getMany.queryOptions({projectId:projectID}));
-    // const { data:messages, isPending } = useSuspenseQuery(trpc.message.getMany.queryOptions({projectId:projectID},{refetchInterval:5000}));
+    const trpc = useTRPC();
+
+    // const { data:messages, isPending } = useSuspenseQuery(trpc.message.getMany.queryOptions({projectId:projectID}));
+    const { data:messages } = useSuspenseQuery(trpc.message.getMany.queryOptions({projectId:projectID},{refetchInterval:5000}));
     // It fetches messages for every 5 seconds
     // TODO: This is just temporary, standardize it later
 
 
 
-    const { data:project } = useSuspenseQuery(trpc.project.getOne.queryOptions({projectId:projectID}));
+    // const { data:project } = useSuspenseQuery(trpc.project.getOne.queryOptions({projectId:projectID}));
 
-    // useEffect(()=>{ 
-    //   const lastAssistantMessageWithFragment = messages.findLast((message)=>{
-    //     return message.role == "ASSISTANT" && !!message.fragment;
-    //   })
+    useEffect(()=>{ 
+      const lastAssistantMessage = messages.findLast((message)=>{
+        return message.role == "ASSISTANT" && !!message.fragment;
+      })
 
-    //   if(lastAssistantMessageWithFragment && lastAssistantMessageWithFragment.fragment){
-    //     setActiveFragment(lastAssistantMessageWithFragment.fragment);
-    //   }
+      if(lastAssistantMessage && lastAssistantMessage.id!==lastAssistantMessageIDRef.current){
+        setActiveFragment(lastAssistantMessage.fragment);
+        lastAssistantMessageIDRef.current = lastAssistantMessage.id;
+      }
 
-    // },[messages,setActiveFragment]);
+    },[messages]);
 
     useEffect(()=>{
       scroll.current?.scrollIntoView({behavior:"smooth"});
-    },[messages])
+    },[])
 
 
     const lastMessage = messages[messages.length-1];
@@ -78,7 +80,9 @@ export const MessageContainer = ({projectID,activeFragment,setActiveFragment}:Pr
            <div ref={scroll}> </div>
            </div>
            <div className="relative p-3 pt-1">
-                <div className="absolute bg-linear-to-b from transparent to-background/70 h-6 -top-6 left-0 right-0 "/> 
+                <div className="absolute bg-linear-to-b from transparent to-background/70 h-6 -top-6 left-0 right-0 flex justify-end pr-5 pb-5">
+                    <ArrowDownIcon className="z-10 font-extralight opacity-70 text-sm cursor-pointer" onClick={()=>{ scroll.current?.scrollIntoView({behavior:"smooth"}) }} />
+                </div> 
                 <MessageForm projectId={projectID} />
            </div>
         </div>
