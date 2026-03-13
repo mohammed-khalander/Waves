@@ -191,9 +191,9 @@ export default function HeroSection() {
                 </section>
             </main>
         <div className="flex flex-col gap-y-10 w-full p-4 justify-center items-center mt-5">
-            <h1 className="font-bold text-6xl" >
+            <h2 className="font-bold text-6xl" >
                 Your Waves
-            </h1>
+            </h2>
             <Suspense fallback={<LoadingScreen message="Projects Are Loading..." />} >
                 <ProjectCards/>
             </Suspense>
