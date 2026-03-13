@@ -24,8 +24,7 @@ export const MessageContainer = ({projectID,activeFragment,setActiveFragment}:Pr
 
     const scroll = useRef<HTMLDivElement|null>(null);
 
-    const lastAssistantMessageIDRef = useRef<String | null>(null);
-
+    const lastAssistantMessageIDRef = useRef<string | null>(null);
     const trpc = useTRPC();
 
     // const { data:messages, isPending } = useSuspenseQuery(trpc.message.getMany.queryOptions({projectId:projectID}));
@@ -47,7 +46,7 @@ export const MessageContainer = ({projectID,activeFragment,setActiveFragment}:Pr
         lastAssistantMessageIDRef.current = lastAssistantMessage.id;
       }
 
-    },[messages]);
+    },[messages,setActiveFragment]);
 
     useEffect(()=>{
       scroll.current?.scrollIntoView({behavior:"smooth"});
