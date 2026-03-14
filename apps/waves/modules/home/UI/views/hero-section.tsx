@@ -87,7 +87,7 @@ export default function HeroSection() {
     const [openBuildButton,setOpenBuildButton] = useState<boolean>(false);
     
 
-    const { isSignedIn } = useUser();
+    const { isSignedIn, user } = useUser();
 
     const createProject = useMutation(trpc.project.create.mutationOptions({
         onSuccess:(data)=>{
@@ -215,8 +215,8 @@ export default function HeroSection() {
         {
             isSignedIn &&
                 <div className="flex flex-col gap-y-10 w-full p-4 justify-center items-center mt-5 scroll-mt-16" ref={projectScrollRef} >
-                    <h2 className="font-bold text-6xl" >
-                        Your Waves
+                    <h2 className="text-balance text-4xl font-semibold lg:text-5xl" >
+                        {user.firstName}&apos;s Waves
                     </h2>
                         <ProjectCards setOpenBuildButton={setOpenBuildButton} />
                 </div>
