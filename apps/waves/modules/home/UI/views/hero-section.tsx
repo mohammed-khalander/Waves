@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import { ProjectCards } from '../components/project-cards';
 import Footer from '../components/footer';
 import { useUser } from '@clerk/nextjs';
+import Features from '../components/features';
+import { useRef } from 'react';
 
 
 const transitionVariants = {
@@ -77,7 +79,9 @@ export default function HeroSection() {
 
     
     const trpc = useTRPC();
-    const router = useRouter();    
+    const router = useRouter();
+    
+    const scrollRef = useRef< HTMLDivElement | null>(null);
 
     const { isSignedIn } = useUser();
 
@@ -106,7 +110,7 @@ export default function HeroSection() {
 
     return (
         <>
-            <HeroHeader />
+            <HeroHeader featureScroll={scrollRef} />
             <main className="h-full">
                 <section>
                     <div className="relative pt-24 md:pt-36">
@@ -178,7 +182,7 @@ export default function HeroSection() {
                                     className="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row">
                                     <div
                                         key={1}
-                                        className="rounded-[calc(var(--radius-xl)+0.125rem)] border-none p-0.5">
+                                        className="rounded-[calc(var(--radius-xl)+0.125rem)] border-none p-0.5" ref={scrollRef} >
                                             <PromptDialogue showCloseButton={true} from="left" />
                                     </div>
                                     <Button
@@ -206,6 +210,7 @@ export default function HeroSection() {
                         <ProjectCards/>
                 </div>
         }   
+            <Features/>
             <Footer/>
         </>
     )
