@@ -12,10 +12,9 @@ import { useTRPC } from '@/trpc/client'
 import { useRouter } from 'next/navigation'
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Suspense } from 'react';
 import { ProjectCards } from '../components/project-cards';
 import Footer from '../components/footer';
-import { LoadingScreen } from '@/components/loading';
+import { useUser } from '@clerk/nextjs';
 
 
 const transitionVariants = {
@@ -62,7 +61,7 @@ const exampleApplication = [
     },
     {
         id:5,
-        text:"Build a landing page, ",
+        text:"Build a landing page",
         prompt:"Build a minimal landing page for BMS College, it should be as simple as possible, no complexities, and only one page code"
     },
     {
@@ -80,6 +79,8 @@ export default function HeroSection() {
     const trpc = useTRPC();
     const router = useRouter();    
 
+    const { isSignedIn } = useUser();
+
     const createProject = useMutation(trpc.project.create.mutationOptions({
         onSuccess:(data)=>{
             toast.success(`Project Started :- ${data.name} `);
@@ -91,6 +92,12 @@ export default function HeroSection() {
     }));
 
     async function onSubmit(prompt:string){
+
+        if(!isSignedIn){
+            router.push('/sign-in');
+            return;
+        }
+
         toast.loading("Prompt Submitting");
         await createProject.mutateAsync({ userPrompt: prompt });  
         toast.dismiss();
@@ -140,7 +147,7 @@ export default function HeroSection() {
                                     delay={0.5}
                                     as="p"
                                     className="mx-auto mt-8 max-w-2xl text-balance text-lg">
-                                    Waves lets you design, build, and launch stunning websites in minutes. Powerful components, smooth animations, and full control — all in one place.
+                                    Waves lets you design, build, and launch stunning websites in minutes. Powerful components, smooth animations, and full control, all in one place.
                                 </TextEffect>
 
                                 <AnimatedGroup variants={transitionVariants} className='mt-5' >
@@ -180,7 +187,7 @@ export default function HeroSection() {
                                         size="lg"
                                         variant="ghost"
                                         className="h-9 rounded-xl px-5 border-2 border-gray-400 ">
-                                        <Link href="#">
+                                        <Link href="/pricing">
                                             <span className="text-nowrap">Upgrade</span>
                                         </Link>
                                     </Button>
@@ -190,14 +197,15 @@ export default function HeroSection() {
                     </div>
                 </section>
             </main>
-        <div className="flex flex-col gap-y-10 w-full p-4 justify-center items-center mt-5">
-            <h2 className="font-bold text-6xl" >
-                Your Waves
-            </h2>
-            <Suspense fallback={<LoadingScreen message="Projects Are Loading..." />} >
-                <ProjectCards/>
-            </Suspense>
-        </div>
+        {
+            isSignedIn &&
+                <div className="flex flex-col gap-y-10 w-full p-4 justify-center items-center mt-5">
+                    <h2 className="font-bold text-6xl" >
+                        Your Waves
+                    </h2>
+                        <ProjectCards/>
+                </div>
+        }   
             <Footer/>
         </>
     )

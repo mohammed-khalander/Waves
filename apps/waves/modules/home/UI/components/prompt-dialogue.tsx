@@ -21,7 +21,9 @@ import { Controller } from 'react-hook-form';
 import { usePromptForm } from './use-prompt-form';
 import { Hint } from '@/components/hint';
 import { LoaderIcon } from 'lucide-react';
-
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 
 
@@ -36,15 +38,27 @@ export const PromptDialogue = ({
   showCloseButton,
 }: BaseDialogDemoProps) => {
 
+    const router = useRouter();
+    const [openBuildButton,setOpenBuildButton] = useState<boolean>(false);
+
     const { form, onSubmit, isPending } = usePromptForm();
+
+    const { isSignedIn } = useUser();
+
+    const handleTriggerClick = (evt:React.MouseEvent)=>{
+      if(!isSignedIn){
+        router.push("/sign-in");
+        return;
+      }
+      setOpenBuildButton(true);
+    }
 
 
 
   return (
-    <Dialog>
-        <DialogTrigger
-          render={<Button className='rounded-xl px-5 text-base' size="lg" >Start Building</Button>}
-        />
+    <Dialog open={openBuildButton} onOpenChange={setOpenBuildButton} >
+      
+      <Button className='rounded-xl px-5 text-base' size="lg" onClick={handleTriggerClick} >Start Building</Button>
 
         <DialogPopup
           from={from}

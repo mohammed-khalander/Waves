@@ -5,6 +5,7 @@ import * as z from "zod"
 import { useMutation } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client"
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 
 const formSchema = z.object({
@@ -16,6 +17,8 @@ export const usePromptForm = ()=>{
 
     const trpc = useTRPC();
     const router = useRouter();
+
+    const { isSignedIn } = useUser();
 
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -36,6 +39,10 @@ export const usePromptForm = ()=>{
     }));
 
     async function onSubmit(data: z.infer<typeof formSchema>) {
+      if(!isSignedIn){
+        router.push('/sign-in');
+        return;
+      }
       await createMessage.mutateAsync({ userPrompt: data.prompt });  
     }
 
