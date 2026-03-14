@@ -16,6 +16,9 @@ export const ProjectCards = ()=>{
 
     const trpc = useTRPC();
     const router = useRouter();
+
+    // TODO: Handle Errors by destructuring the {isError,error} from below query
+    // And build UI for Error state
     
     const {data:projects, isPending} = useQuery(trpc.project.getMany.queryOptions());
 

@@ -10,8 +10,7 @@ import { TRPCError } from "@trpc/server";
 
 
 export const projectRouter = createTRPCRouter({
-    create:protectedProcedure.input(z.object({userPrompt:z.string().min(1,{message:"Prompt is required"}).max(1000,{message:"Sorry, Prompt Can't excceed 1000 characters"})})).mutation(async ({ctx,input})=>{
-        const createProject = await prisma.project.create({
+    create:protectedProcedure.input(z.object({userPrompt:z.string().min(1,{message:"Prompt is required"}).max(1000,{message:"Sorry, Prompt can't exceed 1000 characters"})})).mutation(async ({ctx,input})=>{        const createProject = await prisma.project.create({
             data:{
                 name:generateSlug(2,{ format:"kebab" }),
                 messages:{
