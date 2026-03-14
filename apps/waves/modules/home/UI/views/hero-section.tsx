@@ -16,7 +16,7 @@ import { ProjectCards } from '../components/project-cards';
 import Footer from '../components/footer';
 import { useUser } from '@clerk/nextjs';
 import Features from '../components/features';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 
 const transitionVariants = {
@@ -81,17 +81,28 @@ export default function HeroSection() {
     const trpc = useTRPC();
     const router = useRouter();
     
-    const scrollRef = useRef< HTMLDivElement | null>(null);
+    const featureScrollRef = useRef< HTMLDivElement | null>(null);
+    const projectScrollRef = useRef< HTMLDivElement | null>(null);
+
+    const [openBuildButton,setOpenBuildButton] = useState<boolean>(false);
+    
 
     const { isSignedIn } = useUser();
 
     const createProject = useMutation(trpc.project.create.mutationOptions({
         onSuccess:(data)=>{
-            toast.success(`Project Started :- ${data.name} `);
+            toast.success(`Project Started :- ${data.name} `,{position:"top-center"});
+            setTimeout(()=>{
+                toast.dismiss();
+            },2000);
             router.push(`/project/${data.id}`);
         },
         onError:(error)=>{
-            toast.error(`Something Went Wrong ${error.message}`);
+            toast.error(`Something Went Wrong`,{position:"top-center"});
+            toast.error(error.message,{position:"top-center"});
+            setTimeout(()=>{
+                toast.dismiss();
+            },2000);
         }
     }));
 
@@ -102,7 +113,7 @@ export default function HeroSection() {
             return;
         }
 
-        toast.loading("Prompt Submitting");
+        toast.loading("Prompt Submitting",{position:"top-center"});
         await createProject.mutateAsync({ userPrompt: prompt });  
         toast.dismiss();
     }
@@ -110,7 +121,7 @@ export default function HeroSection() {
 
     return (
         <>
-            <HeroHeader featureScroll={scrollRef} />
+            <HeroHeader featureScroll={featureScrollRef} projectScroll={projectScrollRef} />
             <main className="h-full">
                 <section>
                     <div className="relative pt-24 md:pt-36">
@@ -183,7 +194,7 @@ export default function HeroSection() {
                                     <div
                                         key={1}
                                         className="rounded-[calc(var(--radius-xl)+0.125rem)] border-none p-0.5" >
-                                            <PromptDialogue showCloseButton={true} from="left" />
+                                            <PromptDialogue showCloseButton={true} from="left" openBuildButton={openBuildButton} setOpenBuildButton={setOpenBuildButton} />
                                     </div>
                                     <Button
                                         key={2}
@@ -203,15 +214,15 @@ export default function HeroSection() {
             </main>
         {
             isSignedIn &&
-                <div className="flex flex-col gap-y-10 w-full p-4 justify-center items-center mt-5">
+                <div className="flex flex-col gap-y-10 w-full p-4 justify-center items-center mt-5 scroll-mt-16" ref={projectScrollRef} >
                     <h2 className="font-bold text-6xl" >
                         Your Waves
                     </h2>
-                        <ProjectCards/>
+                        <ProjectCards setOpenBuildButton={setOpenBuildButton} />
                 </div>
         }   
-        <div ref={scrollRef} className='scroll-mt-12.5'>
-            <Features/>
+        <div ref={featureScrollRef} className='scroll-mt-12.5'>
+            <Features  />
         </div>
             <Footer/>
         </>

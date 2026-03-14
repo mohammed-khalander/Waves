@@ -10,9 +10,11 @@ import { TRPCError } from "@trpc/server";
 
 
 export const projectRouter = createTRPCRouter({
-    create:protectedProcedure.input(z.object({userPrompt:z.string().min(1,{message:"Prompt is required"}).max(1000,{message:"Sorry, Prompt can't exceed 1000 characters"})})).mutation(async ({ctx,input})=>{        const createProject = await prisma.project.create({
+    create:protectedProcedure.input(z.object({userPrompt:z.string().min(1,{message:"Prompt is required"}).max(1000,{message:"Sorry, Prompt can't exceed 1000 characters"})})).mutation(async ({ctx,input})=>{        
+        const createProject = await prisma.project.create({
             data:{
                 name:generateSlug(2,{ format:"kebab" }),
+                userId: ctx.auth.userId,
                 messages:{
                     create:{
                         content:input.userPrompt,
@@ -33,8 +35,11 @@ export const projectRouter = createTRPCRouter({
 
         return createProject;
     }),
-    getMany:protectedProcedure.query(async ()=>{
+    getMany:protectedProcedure.query(async ({ctx})=>{
         const projects = await prisma.project.findMany({
+            where:{
+                userId:ctx.auth.userId,
+            },
             include:{
                 messages:true
             },
@@ -44,10 +49,11 @@ export const projectRouter = createTRPCRouter({
         })
         return projects;
     }),
-    getOne:protectedProcedure.input(z.object({projectId:z.string().min(1,{message:"Project ID is Required"})})).query(async ({input})=>{
+    getOne:protectedProcedure.input(z.object({projectId:z.string().min(1,{message:"Project ID is Required"})})).query(async ({input,ctx})=>{
         const project = await prisma.project.findUnique({
             where:{
-                id:input.projectId
+                id:input.projectId,
+                userId:ctx.auth.userId,
             },
             include:{
                 messages:{

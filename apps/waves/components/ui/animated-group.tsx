@@ -127,12 +127,22 @@ const MotionChild = React.useMemo(
   [asChild]
 );
 
+  
+  const hasAnimated = React.useRef(false);
+
+
+
+
   return (
     <MotionComponent
-      initial='hidden'
+      // initial='hidden'
+      initial={hasAnimated.current ? false : "hidden"}
       animate='visible'
       variants={containerVariants}
       className={className}
+      onAnimationComplete={() => {
+      hasAnimated.current = true;
+    }}
     >
       {React.Children.map(children, (child, index) => (
         <MotionChild key={index} variants={itemVariants}>

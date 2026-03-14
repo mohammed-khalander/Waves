@@ -23,7 +23,7 @@ import { Hint } from '@/components/hint';
 import { LoaderIcon } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React, { SetStateAction } from 'react';
 
 
 
@@ -31,15 +31,18 @@ import { useState } from 'react';
 interface BaseDialogDemoProps {
   from: DialogPopupProps['from'];
   showCloseButton: boolean;
+  openBuildButton:boolean;
+  setOpenBuildButton: React.Dispatch<SetStateAction<boolean>>;
 }
 
 export const PromptDialogue = ({
   from,
   showCloseButton,
+  openBuildButton,
+  setOpenBuildButton
 }: BaseDialogDemoProps) => {
 
     const router = useRouter();
-    const [openBuildButton,setOpenBuildButton] = useState<boolean>(false);
 
     const { form, onSubmit, isPending } = usePromptForm();
 

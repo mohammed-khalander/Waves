@@ -15,10 +15,11 @@ interface HeaderProps{
     SignInPage?:boolean;
     SignUpPage?:boolean;
     featureScroll?:RefObject<HTMLDivElement | null>;
+    projectScroll?:RefObject<HTMLDivElement | null>;
 }
 
 
-export const HeroHeader = ({ SignInPage=false,SignUpPage=false, featureScroll }:HeaderProps) => {
+export const HeroHeader = ({ SignInPage=false,SignUpPage=false, featureScroll, projectScroll }:HeaderProps) => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
 
@@ -64,6 +65,12 @@ export const HeroHeader = ({ SignInPage=false,SignUpPage=false, featureScroll }:
                                     <li className=" cursor-pointer text-muted-foreground hover:text-accent-foreground block duration-150 text-[16px] " onClick={()=>{ featureScroll?.current?.scrollIntoView({behavior:"smooth"}) }}   >
                                             Features
                                     </li>
+                                    {
+                                        isSignedIn &&
+                                        <li className=" cursor-pointer text-muted-foreground hover:text-accent-foreground block duration-150 text-[16px] " onClick={()=>{ projectScroll?.current?.scrollIntoView({behavior:"smooth"}) }}   >
+                                                My Waves
+                                        </li>
+                                    }
                                     <li className=" cursor-pointer text-muted-foreground hover:text-accent-foreground block duration-150 text-[16px] "  >
                                             Pricing
                                     </li>
@@ -79,6 +86,12 @@ export const HeroHeader = ({ SignInPage=false,SignUpPage=false, featureScroll }:
                                     <li className=" cursor-pointer text-muted-foreground hover:text-accent-foreground block duration-150" onClick={()=>{ featureScroll?.current?.scrollIntoView({behavior:"smooth"}) }}   >
                                             Features
                                     </li>
+                                    {
+                                        isSignedIn &&
+                                        <li className=" cursor-pointer text-muted-foreground hover:text-accent-foreground block duration-150 text-[16px] " onClick={()=>{ projectScroll?.current?.scrollIntoView({behavior:"smooth"}) }}   >
+                                                My Waves
+                                        </li>
+                                    }
                                     <li className=" cursor-pointer text-muted-foreground hover:text-accent-foreground block duration-150"  >
                                             Pricing
                                     </li>

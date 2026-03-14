@@ -11,9 +11,14 @@ import {format} from "date-fns";
 import { useRouter } from "next/navigation";
 import { LoadingScreen } from "@/components/loading";
 import { ErrorState } from "@/components/error-state";
+import { SetStateAction, Dispatch } from "react";
 
 
-export const ProjectCards = ()=>{
+interface Props{
+    setOpenBuildButton:Dispatch<SetStateAction<boolean>>;
+}
+
+export const ProjectCards = ({setOpenBuildButton}:Props)=>{
 
     const trpc = useTRPC();
     const router = useRouter();
@@ -50,6 +55,12 @@ export const ProjectCards = ()=>{
                         </Card>
                     )
                 })
+            }
+            {
+                projects.length == 0 &&
+                <Button onClick={()=>setOpenBuildButton(true)}>
+                   <span>    Create Your First Wave </span> <ArrowRightIcon/> 
+                </Button>
             }
             </div>
 
