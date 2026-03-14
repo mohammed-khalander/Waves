@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { FileExplorer } from "@/components/code-view/file-explorer";
 import { LoadingScreen } from "@/components/loading";
 import { UserControl } from "@/components/user-control";
+import { ErrorState } from "@/components/error-state";
  
 
 
@@ -100,7 +101,7 @@ export const ProjectViewLoading = ()=>{
 }
 
 export const ProjectViewError = ()=>{
-    return <h1>Error While Rendering Project</h1>
+    return <ErrorState title="Error Loading Projects" description="Something Went Wrong" />
 }
 
 

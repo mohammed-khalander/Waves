@@ -10,6 +10,7 @@ import { ArrowRightIcon } from "lucide-react";
 import {format} from "date-fns";
 import { useRouter } from "next/navigation";
 import { LoadingScreen } from "@/components/loading";
+import { ErrorState } from "@/components/error-state";
 
 
 export const ProjectCards = ()=>{
@@ -17,16 +18,18 @@ export const ProjectCards = ()=>{
     const trpc = useTRPC();
     const router = useRouter();
 
-    // TODO: Handle Errors by destructuring the {isError,error} from below query
-    // And build UI for Error state
+    // TODO: Handle Errors by destructuring the {isError,error} from below query, not here, but in other places
     
-    const {data:projects, isPending} = useQuery(trpc.project.getMany.queryOptions());
+    const {data:projects, isPending,isError,error} = useQuery(trpc.project.getMany.queryOptions());
 
 
     if(isPending){
         return <LoadingScreen message="Loading Projects..." />
     }
 
+    if(isError){
+        return <ErrorState title="Error While Loading Projects" description={error.message} />
+    }
 
     return(
             

@@ -182,7 +182,7 @@ export default function HeroSection() {
                                     className="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row">
                                     <div
                                         key={1}
-                                        className="rounded-[calc(var(--radius-xl)+0.125rem)] border-none p-0.5" ref={scrollRef} >
+                                        className="rounded-[calc(var(--radius-xl)+0.125rem)] border-none p-0.5" >
                                             <PromptDialogue showCloseButton={true} from="left" />
                                     </div>
                                     <Button
@@ -210,7 +210,9 @@ export default function HeroSection() {
                         <ProjectCards/>
                 </div>
         }   
+        <div ref={scrollRef} className='scroll-mt-12.5'>
             <Features/>
+        </div>
             <Footer/>
         </>
     )
