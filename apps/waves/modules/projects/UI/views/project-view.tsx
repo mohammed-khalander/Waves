@@ -21,6 +21,7 @@ import { FileExplorer } from "@/components/code-view/file-explorer";
 import { LoadingScreen } from "@/components/loading";
 import { UserControl } from "@/components/user-control";
 import { ErrorState } from "@/components/error-state";
+import { ErrorBoundary } from "react-error-boundary";
  
 
 
@@ -48,9 +49,11 @@ export const ProjectView = ({projectID}:Props)=>{
 
               <ResizablePanel defaultSize={30} minSize={20} className="flex flex-col" >
                 {/* <ProjectHeader projectId={projectID} /> */}
-                <Suspense fallback={<LoadingScreen message="Messages are Loading..." />} >
-                   <MessageContainer projectID={projectID} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />  
-                </Suspense>
+                <ErrorBoundary fallback={<ErrorState title="Error While Loading Messages" description="Something Went Wrong" />} >
+                    <Suspense fallback={<LoadingScreen message="Messages are Loading..." />} >
+                    <MessageContainer projectID={projectID} activeFragment={activeFragment} setActiveFragment={setActiveFragment} />  
+                    </Suspense>
+                </ErrorBoundary>
               </ResizablePanel>
 
               <ResizableHandle withHandle />

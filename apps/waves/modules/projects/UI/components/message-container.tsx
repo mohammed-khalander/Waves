@@ -13,7 +13,6 @@ import { Fragment } from "@/prisma/prisma/client";
 import { MessageLoading } from "./message-loading";
 import { ProjectHeader } from "./project-header";
 import { ArrowDownIcon } from "lucide-react";
-import { ErrorState } from "@/components/error-state";
 
 interface Props{
     projectID:string;
@@ -57,10 +56,7 @@ export const MessageContainer = ({projectID,activeFragment,setActiveFragment}:Pr
     const lastMessage = messages[messages.length-1];
     const isLastMessageUser = lastMessage?.role == "USER";
 
-
-    if(isError){
-      return <ErrorState title="Error Loading Messages" description={error.message} />
-    }
+    
 
 
 
