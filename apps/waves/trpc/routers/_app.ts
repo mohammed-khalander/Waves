@@ -6,6 +6,7 @@ import { inngest } from '@/inngest/client';
 
 import { messageRouter } from '@/modules/messages/server/route';
 import { projectRouter } from '@/modules/projects/server/route';
+import { UsageRouter } from '@/modules/usage/server/route';
 
 
 export const appRouter = createTRPCRouter({
@@ -60,6 +61,7 @@ export const appRouter = createTRPCRouter({
 
   project:projectRouter,
   message:messageRouter,
+  usage:UsageRouter
 
 
 });
