@@ -39,6 +39,8 @@ export const aiJob = inngest.createFunction(
 
       const sandboxId = await step.run("create-sandbox",async()=>{
         const sandbox = await Sandbox.create("khalandermohammed734/waves-nextjs");
+        // await sandbox.setTimeout(3_600_000); // 1 hour (max for free users)  
+        // await sandbox.setTimeout(3*10*60_000); // 30 Mins in milisec
         return sandbox.sandboxId;
       })
 

@@ -8,6 +8,9 @@ export async function getSandboxId(){
 
 export async function getSandbox(sandboxId:string){
     return await Sandbox.connect(sandboxId);
+    // const sandbox = await Sandbox.connect(sandboxId);
+    // await sandbox.setTimeout(3*10*60_000); // 30 Mins in milisec
+    // return sandbox;
 }
 
 
