@@ -16,13 +16,15 @@ import {
 
 import TextAreaAutosize from "react-textarea-autosize";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 
 import { LoaderIcon, SendIcon } from "lucide-react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client"
+import { Usage } from "./usage"
+import { useRouter } from "next/navigation"
 
 
 
@@ -45,6 +47,8 @@ export const MessageForm = ({projectId}:Props)=>{
 
     const trpc = useTRPC();
     const queryClient = useQueryClient();
+
+    const router = useRouter();
     
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -63,21 +67,34 @@ export const MessageForm = ({projectId}:Props)=>{
             toast.success(`Prompt Submitted :- ${data.content} `);
             form.reset();
             queryClient.invalidateQueries(trpc.message.getMany.queryOptions({ projectId }));
-            // TODO: Invalidate Credit Usage status
+            queryClient.invalidateQueries(trpc.usage.status.queryOptions());
         },
         onError:(error)=>{
-            // TODO: Re-direct to pricing page on specific error
+            if(error.data?.code==="TOO_MANY_REQUESTS"){
+              toast.error(error.message);
+              router.push("/pricing");
+              return;
+            }
             toast.error(`Something Went Wrong ${error.message}`);
         }
     }));
     
     const [isFocused,setIsFocused] = useState(false);
-    const [showUsage,setShowUsage] = useState(false);
+    // const [showUsage,setShowUsage] = useState(false);
     const isPending = createMessage.isPending;
     const isDisabled = isPending || !form.formState.isValid; 
+
+    const { data:usage } = useQuery(trpc.usage.status.queryOptions());
     
+    const showUsage = !!usage;
+
     
     return(
+      <>
+        {
+          showUsage &&
+          <Usage points={usage.remainingPoints} msBeforeNext={usage.msBeforeNext} />
+        }
         <form id="waves-rhf" onSubmit={form.handleSubmit(onSubmit)} className={cn("relative border p-4 pt-1 rounded-xl bg-sidebar dark:bg-sidebar transition-all flex flex-col gap-4",isFocused && "shadow-xs", showUsage &&"rounded-t-none")}>
                 <FieldGroup>
                   <Controller
@@ -100,8 +117,8 @@ export const MessageForm = ({projectId}:Props)=>{
                               if(e.key==="Enter" && (e.ctrlKey || e.metaKey)){
                                   e.preventDefault();
                                   form.handleSubmit(onSubmit)(e);
-                              }
-                          }}
+                                }
+                              }}
                         />
                         {fieldState.invalid && (
                           <FieldError errors={[fieldState.error]} />
@@ -128,6 +145,7 @@ export const MessageForm = ({projectId}:Props)=>{
                 </div>
                   
                 </form>
+        </>
     )
 }
 

@@ -14,7 +14,7 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { ProjectCards } from '../components/project-cards';
 import Footer from '../components/footer';
-import { useUser } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import Features from '../components/features';
 import { useRef, useState } from 'react';
 
@@ -80,6 +80,9 @@ export default function HeroSection() {
     
     const trpc = useTRPC();
     const router = useRouter();
+
+    const { has } = useAuth();
+    const hasProPlan = has({plan:"pro"});
     
     const featureScrollRef = useRef< HTMLDivElement | null>(null);
     const projectScrollRef = useRef< HTMLDivElement | null>(null);
@@ -98,8 +101,16 @@ export default function HeroSection() {
             router.push(`/project/${data.id}`);
         },
         onError:(error)=>{
-            toast.error(`Something Went Wrong`,{position:"top-center"});
-            toast.error(error.message,{position:"top-center"});
+            // toast.error(`Something Went Wrong`,{position:"top-center"});
+
+            console.log("Error in project creation ",error);
+            if(error.data?.code==="TOO_MANY_REQUESTS"){
+                toast.error(error.message,{position:"top-center"});
+                toast.dismiss();
+                router.push("/pricing");
+                return;
+            }
+            toast.error(`Something went wrong ${error.message}`,{position:"top-center"});
             setTimeout(()=>{
                 toast.dismiss();
             },2000);
@@ -196,16 +207,20 @@ export default function HeroSection() {
                                         className="rounded-[calc(var(--radius-xl)+0.125rem)] border-none p-0.5" >
                                             <PromptDialogue showCloseButton={true} from="left" openBuildButton={openBuildButton} setOpenBuildButton={setOpenBuildButton} />
                                     </div>
-                                    <Button
+                                    {
+                                        !hasProPlan &&
+                                        <Button
                                         key={2}
-                                        asChild
-                                        size="lg"
-                                        variant="ghost"
-                                        className="h-9 rounded-xl px-5 border-2 border-gray-400 ">
-                                        <Link href="/pricing">
-                                            <span className="text-nowrap">Upgrade</span>
-                                        </Link>
-                                    </Button>
+                                            asChild
+                                            size="lg"
+                                            variant="ghost"
+                                            className="h-9 rounded-xl px-5 border-2 border-gray-400 ">
+                                            <Link href="/pricing">
+                                                <span className="text-nowrap">Upgrade</span>
+                                            </Link>
+                                        </Button>
+                                    }
+
                                 </AnimatedGroup>
                             </div>
                         </div>

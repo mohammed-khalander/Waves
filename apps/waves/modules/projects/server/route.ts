@@ -7,10 +7,22 @@ import { createTRPCRouter, baseProcedure, protectedProcedure } from "@/trpc/init
 import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 import { TRPCError } from "@trpc/server";
+import { consumeCredits } from "@/lib/usage";
 
 
 export const projectRouter = createTRPCRouter({
-    create:protectedProcedure.input(z.object({userPrompt:z.string().min(1,{message:"Prompt is required"}).max(1000,{message:"Sorry, Prompt can't exceed 1000 characters"})})).mutation(async ({ctx,input})=>{        
+    create:protectedProcedure.input(z.object({userPrompt:z.string().min(1,{message:"Prompt is required"}).max(1000,{message:"Sorry, Prompt can't exceed 1000 characters"})})).mutation(async ({ctx,input})=>{   
+        
+        try{
+            await consumeCredits();
+        }catch(error){
+            console.log("Error in project creation and in consuming credits ",error);
+            if(error instanceof Error){
+                throw new TRPCError({code:"BAD_GATEWAY",message:"Something Went Wrong in TRPC Project Creation.. consumeCredits"});
+            }
+            throw new TRPCError({code:"TOO_MANY_REQUESTS",message:"You ran out of credits"});
+        }
+        
         const createProject = await prisma.project.create({
             data:{
                 name:generateSlug(2,{ format:"kebab" }),

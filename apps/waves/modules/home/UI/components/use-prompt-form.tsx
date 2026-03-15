@@ -34,7 +34,13 @@ export const usePromptForm = ()=>{
             form.reset();
         },
         onError:(error)=>{
-            toast.error(`Something Went Wrong ${error.message}`);
+          console.log("Error in project creation ",error);
+          if(error.data?.code==="TOO_MANY_REQUESTS"){
+              toast.error(error.message);
+              router.push("/pricing");
+              return;
+          }
+          toast.error(`Something Went Wrong ${error.message}`);
         }
     }));
 

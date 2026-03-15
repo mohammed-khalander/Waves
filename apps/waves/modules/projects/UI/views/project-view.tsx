@@ -22,6 +22,7 @@ import { LoadingScreen } from "@/components/loading";
 import { UserControl } from "@/components/user-control";
 import { ErrorState } from "@/components/error-state";
 import { ErrorBoundary } from "react-error-boundary";
+import { useAuth } from "@clerk/nextjs";
  
 
 
@@ -39,6 +40,11 @@ export const ProjectView = ({projectID}:Props)=>{
     const [activeFragment,setActiveFragment] = useState<Fragment | null>(null);
 
     const [tabState,setTabState] = useState<"preview"|"code">("preview");
+
+
+    const { has } = useAuth();
+
+    const hasProPlan = has({plan:"pro"});
 
 
     
@@ -70,11 +76,15 @@ export const ProjectView = ({projectID}:Props)=>{
                             </TabsTrigger>
                         </TabsList>
                         <div className="ml-auto flex items-center gap-x-2">
-                            <Button asChild size="sm" variant="default">
-                                <Link href="/pricing" > <CrownIcon/> Upgrade </Link>
-                            </Button>
-                            <UserControl/>
-                        </div>
+                        {
+                            !hasProPlan &&
+                                <Button asChild size="sm" variant="default">
+                                    <Link href="/pricing" > <CrownIcon/> Upgrade </Link>
+                                </Button>
+                        }
+                        <UserControl/>
+                    </div>
+
                     </div>
                     <TabsContent value="code" className="overflow-y-scroll">
                       {
