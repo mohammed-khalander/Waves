@@ -69,10 +69,6 @@ export const aiJob = inngest.createFunction(
 
       const state = createState<AgentState>({summary:"",files:{}},{messages:previousMessages});
 
-      /**
-       * Explain this new updated state and it's meaning and usages with this new memory architecture
-       */
-       
 
 
 
