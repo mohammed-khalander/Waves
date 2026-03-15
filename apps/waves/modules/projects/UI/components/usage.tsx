@@ -6,6 +6,7 @@ import { formatDuration, intervalToDuration } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@clerk/nextjs";
+import { useMemo } from "react";
 
 interface Props{
     points:number;
@@ -17,6 +18,21 @@ export const Usage = ({points,msBeforeNext}:Props)=>{
     const { has } = useAuth();
 
     const hasProPlan = has({plan:"pro"});
+
+    const resetTime = useMemo(()=>{
+        try{
+            return formatDuration(
+                    intervalToDuration({
+                        start: new Date(),
+                        end: new Date(Date.now()+msBeforeNext),
+                    }),
+                    {format:["months","days","hours"]}
+                )
+        }catch(error){
+            console.log("Error formating date for remaining credits calculation ", error);
+            return "Unknown";
+        }
+     },[]);
 
 
     return(
