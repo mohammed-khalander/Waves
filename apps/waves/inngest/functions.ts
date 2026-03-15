@@ -6,7 +6,7 @@
 */
 
 
-import { openai, createAgent, createTool, createNetwork, type Tool } from "@inngest/agent-kit";
+import { openai, createAgent, createTool, createNetwork, type Tool, type Message, createState } from "@inngest/agent-kit";
 import { Sandbox } from '@e2b/code-interpreter';
 import { z } from "zod";
 
@@ -41,6 +41,40 @@ export const aiJob = inngest.createFunction(
         const sandbox = await Sandbox.create("khalandermohammed734/waves-nextjs");
         return sandbox.sandboxId;
       })
+
+
+      const previousMessages = await step.run("get-previous-messages",async()=>{
+        const formattedMessages: Message[] = [];
+        const messages = await prisma.message.findMany({
+            where:{
+                projectId: projectId,
+            },
+            orderBy:{
+                createdAt:"asc",
+            }
+        })
+
+        for(const message of messages){
+            formattedMessages.push({
+                type:"text",
+                role:message.role === "ASSISTANT" ? "assistant" : "user",
+                content:message.content,
+            })
+        }
+
+        return formattedMessages;
+
+      })
+
+
+      const state = createState<AgentState>({summary:"",files:{}},{messages:previousMessages});
+
+      /**
+       * Explain this new updated state and it's meaning and usages with this new memory architecture
+       */
+       
+
+
 
       const executeCommand = createTool({
           name:"terminal-cmd",
@@ -202,6 +236,7 @@ export const aiJob = inngest.createFunction(
         name:"NextJs Developer Network",
         agents:[codingAgent],
         maxIter:15,
+        defaultState:state,
         router: async ({network})=>{
           const summary = network.state.data.summary;
           if(summary){
@@ -213,7 +248,7 @@ export const aiJob = inngest.createFunction(
       // const result  = await codingAgent.run(` Generate a Simple NextJs component for  ${name}`);
       
 
-      const result = await network.run(userPrompt);
+      const result = await network.run(userPrompt,{state:state});
 
       const sandboxUrl = await step.run("get-sandbox-url",async()=>{
         const sandbox = await getSandbox(sandboxId);
