@@ -13,7 +13,8 @@
     "db:reset": "bunx --bun prisma migrate reset",
     "dev:inngest": "npx --ignore-scripts=false inngest-cli@latest dev",
     "e2b": "npx e2b sandbox list",
-    "e2b:template": "npx e2b template build --name waves-nextjs --cmd '/compile-page.sh'"
+    "e2b:template": "npx e2b template build --name waves-nextjs --cmd '/compile-page.sh'",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ai-sdk/groq": "^3.0.25",
