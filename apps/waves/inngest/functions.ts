@@ -34,8 +34,21 @@ export const aiJob = inngest.createFunction(
     {id:"ai-job"},
     {event:"waves/ai-generate"},
     async ({event,step})=>{
+
       const userPrompt = event.data.userPrompt;
       const projectId = event.data.projectId;
+  
+      if(!process.env.GROQ_API_KEY){
+          return await prisma.message.create({
+              data:{
+                  content:"OpenAI API Key is not configured, Please ensure you have configured your API Key, and then continue!! Or else connect with the owner to continue",
+                  role:"ASSISTANT",
+                  type:"ERROR",
+                  projectId:projectId
+              }
+          })
+      }
+
 
       const sandboxId = await step.run("create-sandbox",async()=>{
         const sandbox = await Sandbox.create("khalandermohammed734/waves-nextjs");
