@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 
+import { Analytics } from '@vercel/analytics/next';
+
 
 import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner";
@@ -55,6 +57,7 @@ export default function RootLayout({
             </ThemeProvider>
             <Toaster/>
         </ClerkProvider>
+        <Analytics />
       </body>
     </html>
   );
