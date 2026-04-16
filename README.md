@@ -1,135 +1,59 @@
-# Turborepo starter
+<div align="center">
 
-This Turborepo starter is maintained by the Turborepo core team.
+  <img src="logo.svg" alt="Waves Logo" width="128">
+  
+# Waves
+### *Riding the Crest of AI Innovation.*
 
-## Using this example
+[![Turborepo](https://img.shields.io/badge/Turborepo-High--Performance-EF4444?logo=turborepo&logoColor=white)](#)
+[![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=next.js&logoColor=white)](#)
+[![tRPC](https://img.shields.io/badge/tRPC-Type--Safe-2596BE?logo=trpc&logoColor=white)](#)
+[![E2B](https://img.shields.io/badge/E2B-Secure_Sandbox-FF7C00?logo=e2b&logoColor=white)](#)
+[![Inngest](https://img.shields.io/badge/Inngest-Background_Jobs-000000?logo=inngest&logoColor=white)](#)
+[![Clerk](https://img.shields.io/badge/Clerk-Authentication-6C47FF?logo=clerk&logoColor=white)](#)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white)](#)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791?logo=postgresql&logoColor=white)](#)
 
-Run the following command:
+</div>
 
-```sh
-npx create-turbo@latest
-```
+---
 
-## What's inside?
+## Overview
 
-This Turborepo includes the following packages/apps:
+**Waves** is a cutting-edge, AI-powered development environment designed to execute discrete tasks, generate code interactively, and run it safely inside a secure cloud sandbox. Built within a highly optimized monorepo architecture, Waves combines autonomous artificial intelligence logic with robust background event processing and a seamless, end-to-end typesafe developer experience.
 
-### Apps and Packages
+By orchestrating AI models natively and deploying generated code safely into isolated cloud sandboxes, Waves represents the next tier of smart, secure, and intuitive web applications.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## Key Features & Technology Stack
 
-### Utilities
+Waves is built using a modern, scalable monorepo tooling approach. Here is how our key features map directly to the breakthrough technologies powering them:
 
-This Turborepo has some additional tools already setup for you:
+### Intelligent AI & Tool Calling
+* **Technology:** Foundational AI Models, Tool Calling APIs
+* **How it works:** The core intelligence bridges user intent with dynamic programmatic execution. By exposing robust tools via **Tool Calling**, the integrated AI can logically decide when to analyze, generate, fetch, or deploy code seamlessly matching the correct tasks to the appropriate environment tools.
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### Secure Code Execution in Sandboxes
+* **Technology:** E2B
+* **How it works:** Autonomously generated code carries inherent execution risks. We leverage **E2B**'s highly secure cloud sandboxing architecture to provision short-lived micro-environments on the fly. This safely isolates AI-generated runtime operations and analysis from the primary application server.
 
-### Build
+### Resilient Background Workflows & Jobs
+* **Technology:** Inngest
+* **How it works:** Heavy workloads such as generating advanced inferences or dispatching sandbox telemetry demand stability. **Inngest** transforms these operations into durable, event-driven background jobs featuring reliable automation and guaranteed retries without clogging the core application loop.
 
-To build all apps and packages, run the following command:
+### End-to-End API Type Safety
+* **Technology:** tRPC
+* **How it works:** Using **tRPC**, we ensure absolute synchronization between our frontend state and server operations. It intrinsically connects Next.js frontend mutations and queries securely with backend context handlers, eliminating the need for manual API schema generation or typings validation.
 
-```
-cd my-turborepo
+### Ultra-Performant Architecture & UI Layer
+* **Technology:** Turborepo, Next.js, Shadcn UI
+* **How it works:** The platform utilizes **Next.js** for performant Server-Side Generation (SSG)/Server-Local computation. The workspace relies on **Turborepo** acting as the ultimate build system to manage cache pipelines across the frontend/backend apps concurrently. All of this is visualized beautifully with **Shadcn UI** accessible elements sitting atop strict Tailwind CSS configuration.
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
+### Mission-Critical Identity Management
+* **Technology:** Clerk
+* **How it works:** Complex end-user identity flow, session handling, and robust OAuth bindings are cleanly handled by **Clerk**, providing a secure and scalable login environment bridging across the Next.js layouts.
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+### Strongly-Typed Data Persistence
+* **Technology:** Prisma + PostgreSQL
+* **How it works:** All vital application state, job histories, model conversations, and platform metrics persistently land in a robust **PostgreSQL** deployment. We interact efficiently and securely with these stores through purely type-safe queries built with the **Prisma ORM**.
