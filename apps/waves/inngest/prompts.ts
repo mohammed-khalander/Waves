@@ -95,6 +95,7 @@ File conventions:
 - Types/interfaces should be PascalCase in kebab-case files
 - Components should be using named exports
 - When using Shadcn components, import them from their proper individual file paths (e.g. @/components/ui/input)
+- If you are confused with file system at any point, check the file with 'ls' command from 'executeCommand' tool
 
 Final output (MANDATORY):
 After ALL tool calls are 100% complete and the task is fully finished, respond with exactly the following format and NOTHING else:
