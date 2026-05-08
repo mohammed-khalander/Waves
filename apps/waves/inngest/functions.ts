@@ -129,7 +129,7 @@ export const aiJob = inngest.createFunction(
           name:"createOrUpdateFiles",
           description:"Create Or Update file in the sandbox",
           parameters:z.object({
-              files:z.array(z.object({ path:z.string(), content:z.string() }))
+              files:z.array(z.object({ path:z.string().describe("path of the file inside the project, for ex. app/page.tsx"), content:z.string().describe("code of that file") })).describe("This should be the array of the object with file paths and code for the same")
           }),
           handler:async ({files},{step,network}:Tool.Options<AgentState> )=>{
               const newFiles = await step?.run("createOrUpdateFiles",async ()=>{
@@ -200,15 +200,29 @@ export const aiJob = inngest.createFunction(
 
 
          
+    //   const model = openai({
+    //    // model: "llama-3.3-70b-versatile",
+    //     // model: "moonshotai/kimi-k2-instruct-0905",
+    //     // model: "meta-llama/llama-4-scout-17b-16e-instruct",
+    //     // model: "groq/compound",
+    //     // model: "qwen/qwen3-32b",
+    //     model: "openai/gpt-oss-120b",
+    //     // model: "meta-llama/llama-4-scout-17b-16e-instruct",
+    //     // model: "groq/compound",
+    //     apiKey: process.env.GROQ_API_KEY,
+    //     baseUrl: "https://api.groq.com/openai/v1/",
+    //     defaultParameters:{
+    //       temperature:0.1,
+    //     },
+    //   });
       const model = openai({
-       // model: "llama-3.3-70b-versatile",
-        model: "moonshotai/kimi-k2-instruct-0905",
-        // model: "qwen/qwen3-32b",
-        // model: "openai/gpt-oss-120b",
-        // model: "meta-llama/llama-4-scout-17b-16e-instruct",
-        // model: "groq/compound",
-        apiKey: process.env.GROQ_API_KEY,
-        baseUrl: "https://api.groq.com/openai/v1/",
+        model: "minimaxai/minimax-m2.7", //Only working till now
+        // model: "deepseek-ai/deepseek-v4-pro",  This model just doesn't work
+        //model: "z-ai/glm4.7",// It doesn't know anything apart from thinking
+        // model: "moonshotai/kimi-k2-instruct-0905", // Takes time (2 mins) but works
+        // model: "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning", 
+        apiKey: process.env.NVIDIA_API_KEY,
+        baseUrl: "https://integrate.api.nvidia.com/v1",
         defaultParameters:{
           temperature:0.1,
         },
